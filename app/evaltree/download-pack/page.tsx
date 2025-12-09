@@ -4,36 +4,30 @@ const pdfs = [
   { title: "Geopolitics 2025", href: "/evaltree/pdfs/geopolitics-2025-preview.pdf" },
 ];
 
-
 const STRIPE_SINGLE = "https://buy.stripe.com/dRm7sK8uLaA89lNcL77Vm0J";
-// Replace this with your 5-brief Stripe link when you get it:
 const STRIPE_PACK = "https://buy.stripe.com/bJe14mdP5eQo2Xp9yV7Vm0K";
 
+// ✅ Add official registered address here (required in footer for compliance)
+import { CROWBAR_REGISTERED_ADDRESS } from "../_legal";
+export const metadata = {
+  title: "Evaltree Insights by Crowbar — 5-Minute Expert Briefs",
+  description:
+    "Instant-access expert briefs. Download all purchased briefs securely after payment.",
+};
 
 const navItems = [
-    { label: "Home", href: "#top" },
-
+  { label: "Home", href: "#top" },
   { label: "About", href: "#about" },
   { label: "Previews", href: "#previews" },
   { label: "Pricing", href: "#pricing" },
 ];
 
-
 export default function DownloadPack() {
   return (
     <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
       {/* Header */}
-      <header className="border-b border-[#0F1C3F]/10 bg-white/85 backdrop-blur">
-        <div className=" flex w-full items-center justify-between gap-4 px-6 py-4">
-          <a href="/evaltree" className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-[#0F1C3F]" />
-            <div className="leading-tight">
-              <div className="text-sm font-semibold tracking-tight md:text-base">
-                Evaltree Insights
-              </div>
-              <div className="text-xs opacity-70">by Crowbar</div>
-            </div>
-          </a>
+      <header >
+        <div className=" flex w-full items-center justify-end gap-4 px-6 py-4">
 
           <div className="flex items-center gap-3">
             <a
@@ -59,17 +53,24 @@ export default function DownloadPack() {
           </h1>
 
           <p className="mt-3 text-base opacity-80">
-            Download your Evaltree Insights brief(s) below:
+            Download your Evaltree Insights by Crowbar brief(s) below:
           </p>
 
           {/* Instruction */}
           <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
             <p className="text-sm font-medium">
-              If you purchased the 5-Brief Pack, you may download all available briefs.
+              If you purchased All Briefs, you may download all available briefs.
             </p>
             <p className="mt-2 text-sm opacity-80">
               New briefs will appear here as they are published.
             </p>
+          </div>
+
+          {/* ✅ Compliance disclaimers */}
+          <div className="mt-4 text-xs opacity-70">
+            <div>Payments processed securely by Crowbar Ltd.</div>
+            <div>Transactions are handled by Stripe and delivered instantly upon payment.</div>
+            <div>All purchases are non-refundable due to the digital nature of the product.</div>
           </div>
 
           {/* List */}
@@ -113,80 +114,7 @@ export default function DownloadPack() {
         </div>
       </div>
 
-      <footer className="border-t border-[#0F1C3F]/10 bg-white">
-        <div className="w-full px-6 py-10">
-          <div className="grid gap-8 md:grid-cols-3">
-            {/* Brand */}
-            <div>
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-[#0F1C3F]" />
-                <div>
-                  <div className="font-semibold">Evaltree Insights</div>
-                  <div className="text-sm opacity-70">by Crowbar Ltd</div>
-                </div>
-              </div>
-
-              <p className="mt-4 text-sm leading-relaxed opacity-75">
-                Concise 3–5 page briefs on AI, geopolitics, valuation, and global trends —
-                designed for fast understanding and better decisions.
-              </p>
-            </div>
-
-            {/* Links */}
-            <div className="md:justify-self-center">
-              <div className="text-sm font-semibold">Explore</div>
-              <div className="mt-3 flex flex-col gap-2 text-sm">
-                {navItems.map((item) => (
-                  <a
-                    key={item.href}
-                    href={item.href}
-                    className="opacity-80 hover:opacity-100"
-                  >
-                    {item.label}
-                  </a>
-                ))}
-                <a
-                  href={STRIPE_SINGLE}
-                  className="opacity-80 hover:opacity-100"
-                >
-                  Buy Single ($2.99)
-                </a>
-                <a
-                  href={STRIPE_PACK}
-                  className="opacity-80 hover:opacity-100"
-                >
-                  Buy Pack ($8.99)
-                </a>
-              </div>
-            </div>
-
-            {/* Contact */}
-            <div className="md:justify-self-end">
-              <div className="text-sm font-semibold">Contact</div>
-              <div className="mt-3 text-sm opacity-80">
-                Support:{" "}
-                <a
-                  className="font-medium underline underline-offset-4"
-                  href="mailto:support@crowbarltd.com"
-                >
-                  support@crowbarltd.com
-                </a>
-              </div>
-
-              <div className="mt-3 text-sm opacity-70">
-                Payments processed securely by Crowbar Ltd.
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-10 flex flex-col gap-2 border-t border-[#0F1C3F]/10 pt-6 text-sm opacity-70 md:flex-row md:items-center md:justify-between">
-            <div>© Crowbar Ltd 2025. All rights reserved.</div>
-            <a href="#top" className="font-medium opacity-80 hover:opacity-100">
-              Back to top ↑
-            </a>
-          </div>
-        </div>
-      </footer>
+     
     </main>
   );
 }
