@@ -64,10 +64,10 @@ export default function Footer(){
                           </a>
                         ))}
                         <a href={STRIPE_SINGLE} className="opacity-80 hover:opacity-100">
-                          Buy Single ($3)
+                          Buy Single ($2.99)
                         </a>
                         <a href={STRIPE_PACK} className="opacity-80 hover:opacity-100">
-                          Buy All Briefs ($9)
+                          Buy All Briefs ($8.99)
                         </a>
                       </div>
                     </div>
@@ -87,7 +87,7 @@ export default function Footer(){
                         </a>
                       </div>
         
-                      {/* ✅ Mandatory disclaimer */}
+                  
                        <div className="mt-2 text-sm opacity-70">
                        <strong> Payments processed securely by Crowbar Ltd.</strong>
                       </div>

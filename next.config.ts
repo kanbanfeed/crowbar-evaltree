@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  basePath: "/evaltree",
+  assetPrefix: "/evaltree",
 };
+
 
 export default nextConfig;
