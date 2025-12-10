@@ -86,7 +86,7 @@ export default function DownloadSingle() {
                 <a
                   href={p.href}
                   className="rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white hover:opacity-95"
-                  target="_blank"
+                  download={`${p.title.replace(/\s+/g, "-").toLowerCase()}-preview.pdf`}
                   rel="noreferrer"
                 >
                   PDF

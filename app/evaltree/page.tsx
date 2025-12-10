@@ -110,7 +110,7 @@ export default function EvaltreeLanding() {
 
               <a
                 href={p.href}
-                target="_blank"
+                download={`${p.title.replace(/\s+/g, "-").toLowerCase()}-preview.pdf`}
                 rel="noreferrer"
                 className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white hover:opacity-95"
               >
