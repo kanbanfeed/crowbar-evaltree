@@ -1,8 +1,8 @@
 const navItems = [
-  { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
-  { label: "Previews", href: "#previews" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Home", href: ".#top" },
+  { label: "About", href: ".#about" },
+  { label: "Previews", href: ".#previews" },
+  { label: "Pricing", href: ".#pricing" },
 ];
 
 const STRIPE_SINGLE = "https://buy.stripe.com/dRm7sK8uLaA89lNcL77Vm0J";

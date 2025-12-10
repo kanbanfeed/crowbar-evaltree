@@ -127,15 +127,15 @@ export default function EvaltreeLanding() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Single Brief — $3 USD</div>
+            <div className="text-sm opacity-70">Single Brief — $2.99 USD</div>
             <div className="mt-2 text-2xl font-semibold">Single Brief</div>
-            <div className="mt-2 text-3xl font-semibold">$3 USD</div>
+            <div className="mt-2 text-3xl font-semibold">$2.99 USD</div>
 
             <a
               href={STRIPE_SINGLE}
               className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white hover:opacity-95"
             >
-              Buy Single Brief – $3 USD
+              Buy Single Brief – $2.99 USD
             </a>
 
             {/* ✅ Pricing transparency */}
@@ -145,15 +145,15 @@ export default function EvaltreeLanding() {
           </div>
 
           <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">All Briefs — $9 USD</div>
+            <div className="text-sm opacity-70">All Briefs — $8.99 USD</div>
             <div className="mt-2 text-2xl font-semibold">All Briefs</div>
-            <div className="mt-2 text-3xl font-semibold">$9 USD</div>
+            <div className="mt-2 text-3xl font-semibold">$8.99 USD</div>
 
             <a
               href={STRIPE_PACK}
               className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white hover:opacity-95"
             >
-              Buy All Briefs – $9 USD
+              Buy All Briefs – $8.99 USD
             </a>
 
             {/* ✅ Pricing transparency */}
