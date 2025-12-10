@@ -4,8 +4,7 @@ const pdfs = [
   { title: "Geopolitics 2025", href: "/evaltree/pdfs/geopolitics-2025-preview.pdf" },
 ];
 
-const STRIPE_SINGLE = "https://buy.stripe.com/dRm7sK8uLaA89lNcL77Vm0J";
-const STRIPE_PACK = "https://buy.stripe.com/bJe14mdP5eQo2Xp9yV7Vm0K";
+
 
 // ✅ Add official registered address here (required in footer for compliance)
 import { CROWBAR_REGISTERED_ADDRESS } from "../_legal";
@@ -15,12 +14,7 @@ export const metadata = {
     "Instant-access expert briefs. Download all purchased briefs securely after payment.",
 };
 
-const navItems = [
-  { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
-  { label: "Previews", href: "#previews" },
-  { label: "Pricing", href: "#pricing" },
-];
+
 
 export default function DownloadPack() {
   return (
@@ -88,7 +82,7 @@ export default function DownloadPack() {
                   download={`${p.title.replace(/\s+/g, "-").toLowerCase()}-preview.pdf`}
                   rel="noreferrer"
                 >
-                  PDF
+                  Download PDF
                 </a>
               </li>
             ))}

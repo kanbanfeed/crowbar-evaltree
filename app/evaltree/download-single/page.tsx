@@ -1,4 +1,3 @@
-import { CROWBAR_REGISTERED_ADDRESS } from "../_legal";
 
 const pdfs = [
   { title: "AI Safety 2025", href: "/evaltree/pdfs/ai-safety-2025-preview.pdf" },
@@ -6,8 +5,7 @@ const pdfs = [
   { title: "Geopolitics 2025", href: "/evaltree/pdfs/geopolitics-2025-preview.pdf" },
 ];
 
-const STRIPE_SINGLE = "https://buy.stripe.com/dRm7sK8uLaA89lNcL77Vm0J";
-const STRIPE_PACK = "https://buy.stripe.com/bJe14mdP5eQo2Xp9yV7Vm0K";
+
 
 // ✅ Add official registered address here (required in footer for compliance)
 
@@ -17,12 +15,6 @@ export const metadata = {
     "Instant-access expert briefs. Download your purchased brief securely after payment.",
 };
 
-const navItems = [
-  { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
-  { label: "Previews", href: "#previews" },
-  { label: "Pricing", href: "#pricing" },
-];
 
 export default function DownloadSingle() {
   return (
@@ -89,7 +81,7 @@ export default function DownloadSingle() {
                   download={`${p.title.replace(/\s+/g, "-").toLowerCase()}-preview.pdf`}
                   rel="noreferrer"
                 >
-                  PDF
+                  Download PDF
                 </a>
               </li>
             ))}
