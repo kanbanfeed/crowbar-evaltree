@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
             Privacy Policy
           </h1>
           <p className="mt-2 text-sm opacity-70">
-            Evaltree Insights by Crowbar (Crowbar Ltd) • Last updated: 2025
+            Evaltree Insights by Crowbar (Crowbar Ltd) • Last updated:10/12/2025
           </p>
 
           <div className="mt-6 space-y-5 text-sm leading-relaxed opacity-85">

@@ -39,6 +39,9 @@ export default function Footer(){
                         >
                           <b>support@crowbarltd.com</b>
                         </a>
+                        <p className="mt-1 text-sm opacity-70">
+        Typical response time: within 7 business days.
+      </p>
                       </div>
                       <div className="mt-2 text-sm opacity-75">
                         <b>Registered address:</b>

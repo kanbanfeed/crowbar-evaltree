@@ -27,7 +27,7 @@ export default function CookiePolicyPage() {
         <div className="rounded-3xl bg-white p-8 shadow-sm md:p-10">
           <h1 className="text-2xl font-semibold md:text-3xl">Cookie Policy</h1>
           <p className="mt-2 text-sm opacity-70">
-            Evaltree Insights by Crowbar • Last updated: 2025
+            Evaltree Insights by Crowbar • Last updated:10/12/2025
           </p>
 
           <div className="mt-6 space-y-5 text-sm leading-relaxed opacity-85">

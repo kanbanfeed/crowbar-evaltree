@@ -30,7 +30,7 @@ export default function TermsPage() {
             Terms of Use &amp; Terms of Purchase
           </h1>
           <p className="mt-2 text-sm opacity-70">
-            Evaltree Insights by Crowbar • Last updated: 2025
+            Evaltree Insights by Crowbar • Last updated: 10/12/2025
           </p>
 
           <div className="mt-6 space-y-5 text-sm leading-relaxed opacity-85">
