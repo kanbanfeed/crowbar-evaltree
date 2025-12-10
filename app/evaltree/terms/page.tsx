@@ -10,24 +10,17 @@ export const metadata = {
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
-      <header className="border-b border-[#0F1C3F]/10 bg-white/85 backdrop-blur">
-        <div className="flex w-full items-center justify-between gap-4 px-6 py-4">
-          <a href="/evaltree" className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-xl bg-[#0F1C3F]" />
-            <div className="leading-tight">
-              <div className="text-sm font-semibold tracking-tight md:text-base">
-                Evaltree Insights
-              </div>
-              <div className="text-xs opacity-70">by Crowbar</div>
-            </div>
-          </a>
+      <header >
+        <div className=" flex w-full items-center justify-end gap-4 px-6 py-4">
 
-          <a
-            href="/evaltree"
-            className="rounded-xl border border-[#ff6a00] bg-white px-4 py-2 text-sm font-semibold hover:bg-[#ff6a00] hover:text-white"
-          >
-            Back to landing
-          </a>
+          <div className="flex items-center gap-3">
+            <a
+              href="/evaltree"
+              className="rounded-xl border border-[#ff6a00] bg-white px-4 py-2 text-sm font-semibold hover:bg-[#ff6a00] hover:text-white  "
+            >
+              Back to landing
+            </a>
+          </div>
         </div>
       </header>
 
@@ -113,8 +106,8 @@ export default function TermsPage() {
             <h2 className="text-base font-semibold opacity-100">6. Pricing</h2>
             <p>Pricing is displayed clearly:</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Single Brief — $3</li>
-              <li>All Briefs — $9</li>
+              <li>Single Brief — $2.99</li>
+              <li>All Briefs — $8.99</li>
             </ul>
             <p>Crowbar Ltd may update pricing at any time, but changes will not affect already-completed purchases.</p>
 

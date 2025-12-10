@@ -25,7 +25,7 @@ export default function RootLayout({
       <body >
         <Header />
         {children}
-        {ANALYTICS_ENABLED ? <CookieBanner /> : null}
+       <CookieBanner /> 
         <Footer />
       </body>
     </html>

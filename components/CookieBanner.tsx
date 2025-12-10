@@ -49,6 +49,7 @@ export default function CookieBanner() {
                 localStorage.setItem(KEY, "accepted");
                 setShow(false);
               }}
+              
             >
               Accept
             </button>

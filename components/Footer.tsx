@@ -24,11 +24,11 @@ export default function Footer(){
                           <div className="text-sm opacity-70">Crowbar Ltd</div>
                         </div>
                       </div>
-        
+{/*         
                       <p className="mt-4 text-sm leading-relaxed opacity-75">
                         Concise 3–5 page briefs on AI, geopolitics, valuation, and global trends —
                         designed for fast understanding and better decisions.
-                      </p>
+                      </p> */}
         
                       {/* ✅ Company details required */}
                       <div className="mt-4 text-sm opacity-75">
@@ -48,9 +48,7 @@ export default function Footer(){
                       </div>
         
                       {/* ✅ Payment disclaimer required in footer */}
-                      <div className="mt-2 text-sm opacity-70">
-                       <strong> Payments processed securely by Crowbar Ltd.</strong>
-                      </div>
+                     
                     </div>
         
                     {/* Links */}
@@ -87,8 +85,8 @@ export default function Footer(){
                       </div>
         
                       {/* ✅ Mandatory disclaimer */}
-                      <div className="mt-4 text-sm opacity-70">
-                        Payments processed securely by Crowbar Ltd.
+                       <div className="mt-2 text-sm opacity-70">
+                       <strong> Payments processed securely by Crowbar Ltd.</strong>
                       </div>
                     </div>
                   </div>

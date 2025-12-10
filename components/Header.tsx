@@ -50,7 +50,7 @@ export default function Header() {
               href={STRIPE_SINGLE}
               className="inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95"
             >
-              Buy ($3)
+              Buy Single Brief – $2.99 USD
             </a>
           </div>
         </div>

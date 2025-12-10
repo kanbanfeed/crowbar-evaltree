@@ -29,13 +29,9 @@ const previews = [
   },
 ];
 
-
-
 export default function EvaltreeLanding() {
   return (
     <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
-     
-
       {/* Hero */}
       <section id="top" className="mx-auto max-w-6xl px-6 pb-10 pt-8">
         <div className="rounded-3xl bg-white p-8 shadow-sm md:p-12">
@@ -57,22 +53,18 @@ export default function EvaltreeLanding() {
               href={STRIPE_SINGLE}
               className="inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white shadow-sm hover:opacity-95"
             >
-              Buy 1 Brief ($3)
+              Buy Single Brief – $2.99 USD
             </a>
 
             <a
               href={STRIPE_PACK}
               className="inline-flex items-center justify-center rounded-xl border border-[#0F1C3F]/15 bg-white px-6 py-3 font-semibold text-[#0F1C3F] hover:bg-[#F5F6F8]"
             >
-              Buy All Briefs ($9)
+              Buy All Briefs – $8.99 USD
             </a>
           </div>
 
-          {/* ✅ Compliance disclaimers (hero) */}
-          <p className="mt-4 text-sm opacity-70">
-            Payments processed securely by Crowbar Ltd. Transactions are handled by Stripe and delivered instantly upon payment.
-            All purchases are non-refundable due to the digital nature of the product.
-          </p>
+          {/* ✅ Removed repeated payment/Stripe disclaimer from hero as per guidance */}
         </div>
       </section>
 
@@ -135,56 +127,100 @@ export default function EvaltreeLanding() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Option A — $3</div>
+            <div className="text-sm opacity-70">Single Brief — $3 USD</div>
             <div className="mt-2 text-2xl font-semibold">Single Brief</div>
-            <div className="mt-2 text-3xl font-semibold">$3</div>
+            <div className="mt-2 text-3xl font-semibold">$3 USD</div>
 
             <a
               href={STRIPE_SINGLE}
               className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white hover:opacity-95"
             >
-              Buy Single Brief
+              Buy Single Brief – $3 USD
             </a>
 
             {/* ✅ Pricing transparency */}
             <p className="mt-3 text-sm opacity-70">
               Includes one research brief of your choice. Delivered instantly via Stripe email link.
             </p>
-
-            {/* ✅ Mandatory disclaimers under pricing */}
-            <p className="mt-3 text-xs opacity-70">
-              Payments processed securely by Crowbar Ltd. Transactions are handled by Stripe and delivered instantly upon payment.
-              All purchases are non-refundable due to the digital nature of the product.
-            </p>
           </div>
 
           <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Option B — $9</div>
+            <div className="text-sm opacity-70">All Briefs — $9 USD</div>
             <div className="mt-2 text-2xl font-semibold">All Briefs</div>
-            <div className="mt-2 text-3xl font-semibold">$9</div>
+            <div className="mt-2 text-3xl font-semibold">$9 USD</div>
 
             <a
               href={STRIPE_PACK}
               className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white hover:opacity-95"
             >
-              Buy All Briefs
+              Buy All Briefs – $9 USD
             </a>
 
             {/* ✅ Pricing transparency */}
             <p className="mt-3 text-sm opacity-70">
               Includes all briefs. Delivered instantly via Stripe email link.
             </p>
-
-            {/* ✅ Mandatory disclaimers under pricing */}
-            <p className="mt-3 text-xs opacity-70">
-              Payments processed securely by Crowbar Ltd. Transactions are handled by Stripe and delivered instantly upon payment.
-              All purchases are non-refundable due to the digital nature of the product.
-            </p>
           </div>
         </div>
-      </section>
 
-     
+       <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <div className="text-sm font-semibold">Important information</div>
+      <p className="mt-2 text-sm leading-relaxed opacity-80">
+        Evaltree Insights are informational research briefs only and do not constitute legal, financial, or investment advice.
+        Please read the{" "}
+        <a
+          href="/evaltree/terms"
+          className="font-medium underline underline-offset-4"
+        >
+          Terms of Use / Terms of Purchase
+        </a>{" "}
+        before buying.
+      </p>
+    </div>
+
+    <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
+      Not advice
+    </span>
+  </div>
+
+  <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
+    <div className="text-sm font-semibold">Payments & delivery</div>
+    <ul className="mt-2 space-y-2 text-sm opacity-80">
+      <li>Payments processed securely by Crowbar Ltd.</li>
+      <li>Transactions are handled by Stripe and delivered instantly upon payment.</li>
+      <li>All purchases are non-refundable due to the digital nature of the product.</li>
+    </ul>
+  </div>
+</div>
+
+        {/* ✅ Contact / Support micro-section */}
+        <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <div className="text-sm font-semibold">Support</div>
+      <p className="mt-2 text-sm opacity-80">
+        Email us at{" "}
+        <a
+          className="font-medium underline underline-offset-4"
+          href="mailto:support@crowbarltd.com"
+        >
+          support@crowbarltd.com
+        </a>{" "}
+        for purchase, access, or general enquiries.
+      </p>
+      <p className="mt-1 text-sm opacity-70">
+        Typical response time: within 2 business days.
+      </p>
+    </div>
+
+    <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
+      Customer support
+    </span>
+  </div>
+</div>
+      </section>
     </main>
   );
 }
