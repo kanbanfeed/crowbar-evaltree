@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "../globals.css";
+import "./globals.css";
 
-import CookieBanner from "../../components/CookieBanner";
+import CookieBanner from "../components/CookieBanner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
