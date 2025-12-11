@@ -49,16 +49,18 @@ export default function EvaltreeLanding() {
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            {/* Primary CTA – stronger hover/active/focus */}
             <a
               href={STRIPE_SINGLE}
-              className="inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white shadow-sm hover:opacity-95"
+              className="inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white shadow-sm transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
             >
               Buy Single Brief – $2.99 USD
             </a>
 
+            {/* Secondary CTA – much clearer change on hover/active */}
             <a
               href={STRIPE_PACK}
-              className="inline-flex items-center justify-center rounded-xl border border-[#FF6A00] bg-white px-6 py-3 font-semibold text-[#0F1C3F] hover:bg-[#FF6A00] hover:text-[#ffffff]"
+              className="inline-flex items-center justify-center rounded-xl border border-[#FF6A00] bg-white px-6 py-3 font-semibold text-[#0F1C3F] transition-transform transition-colors duration-150 ease-out hover:bg-[#FF6A00] hover:text-white hover:shadow-md active:bg-[#e65f00] active:text-white active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
             >
               Buy Five Briefs  – $8.99 USD
             </a>
@@ -112,7 +114,7 @@ export default function EvaltreeLanding() {
                 href={p.href}
                 download={`${p.title.replace(/\s+/g, "-").toLowerCase()}-preview.pdf`}
                 rel="noreferrer"
-                className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white hover:opacity-95"
+                className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
               >
                 Download Free Preview
               </a>
@@ -133,7 +135,7 @@ export default function EvaltreeLanding() {
 
             <a
               href={STRIPE_SINGLE}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white hover:opacity-95"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
             >
               Buy Single Brief – $2.99 USD
             </a>
@@ -151,7 +153,7 @@ export default function EvaltreeLanding() {
 
             <a
               href={STRIPE_PACK}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white hover:opacity-95"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
             >
               Buy Five Briefs – $8.99 USD
             </a>
@@ -163,63 +165,40 @@ export default function EvaltreeLanding() {
           </div>
         </div>
 
-       <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
-  <div className="flex items-start justify-between gap-4">
-    <div>
-      <div className="text-sm font-semibold">Important information</div>
-      <p className="mt-2 text-sm leading-relaxed opacity-80">
-        Evaltree Insights are informational research briefs only and do not constitute legal, financial, or investment advice.
-        Please read the{" "}
-        <a
-          href="/evaltree/terms"
-          className="font-medium underline underline-offset-4"
-        >
-          Terms of Use / Terms of Purchase
-        </a>{" "}
-        before buying.
-      </p>
-    </div>
+        <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-sm font-semibold">Important information</div>
+              <p className="mt-2 text-sm leading-relaxed opacity-80">
+                Evaltree Insights are informational research briefs only and do not constitute legal, financial, or investment advice.
+                Please read the{" "}
+                <a
+                  href="/evaltree/terms"
+                  className="font-medium underline underline-offset-4"
+                >
+                  Terms of Use / Terms of Purchase
+                </a>{" "}
+                before buying.
+              </p>
+            </div>
 
-    <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
-      Not advice
-    </span>
-  </div>
+            <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
+              Not advice
+            </span>
+          </div>
 
-  <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
-    <div className="text-sm font-semibold">Payments & delivery</div>
-    <ul className="mt-2 space-y-2 text-sm opacity-80">
-      <li>Payments processed securely by Crowbar Ltd.</li>
-      <li>Transactions are handled by Stripe and delivered instantly upon payment.</li>
-      <li>All purchases are non-refundable due to the digital nature of the product.</li>
-    </ul>
-  </div>
-</div>
+          <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
+            <div className="text-sm font-semibold">Payments & delivery</div>
+            <ul className="mt-2 space-y-2 text-sm opacity-80">
+              <li>Payments processed securely by Crowbar Ltd.</li>
+              <li>Transactions are handled by Stripe and delivered instantly upon payment.</li>
+              <li>All purchases are non-refundable due to the digital nature of the product.</li>
+            </ul>
+          </div>
+        </div>
 
         {/* ✅ Contact / Support micro-section */}
-        {/* <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
-  <div className="flex items-start justify-between gap-4">
-    <div>
-      <div className="text-sm font-semibold">Support</div>
-      <p className="mt-2 text-sm opacity-80">
-        Email us at{" "}
-        <a
-          className="font-medium underline underline-offset-4"
-          href="mailto:support@crowbarltd.com"
-        >
-          support@crowbarltd.com
-        </a>{" "}
-        for purchase, access, or general enquiries.
-      </p>
-      <p className="mt-1 text-sm opacity-70">
-        Typical response time: within 2 business days.
-      </p>
-    </div>
-
-    <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
-      Customer support
-    </span>
-  </div>
-</div> */}
+        {/* (commented out as per your current version) */}
       </section>
     </main>
   );

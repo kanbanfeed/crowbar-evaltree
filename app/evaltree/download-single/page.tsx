@@ -1,11 +1,8 @@
-
 const pdfs = [
   { title: "AI Safety 2025", href: "/evaltree/pdfs/ai-safety-2025-preview.pdf" },
   { title: "Startup Valuation 2025", href: "/evaltree/pdfs/startup-valuation-2025-preview.pdf" },
   { title: "Geopolitics 2025", href: "/evaltree/pdfs/geopolitics-2025-preview.pdf" },
 ];
-
-
 
 // ✅ Add official registered address here (required in footer for compliance)
 
@@ -15,18 +12,16 @@ export const metadata = {
     "Instant-access expert briefs. Download your purchased brief securely after payment.",
 };
 
-
 export default function DownloadSingle() {
   return (
     <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
       {/* Header */}
-      <header >
-        <div className=" flex w-full items-center justify-end gap-4 px-6 py-4">
-
+      <header>
+        <div className="flex w-full items-center justify-end gap-4 px-6 py-4">
           <div className="flex items-center gap-3">
             <a
               href="/evaltree"
-              className="rounded-xl border border-[#ff6a00] bg-white px-4 py-2 text-sm font-semibold hover:bg-[#ff6a00] hover:text-white  "
+              className="rounded-xl border border-[#ff6a00] bg-white px-4 py-2 text-sm font-semibold transition-transform transition-colors duration-150 ease-out hover:bg-[#ff6a00] hover:text-white hover:shadow-md active:bg-[#e65f00] active:text-white active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ff6a00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
             >
               Back to landing
             </a>
@@ -77,13 +72,12 @@ export default function DownloadSingle() {
                 <span className="font-medium">{p.title}</span>
                 <a
                   href={p.href}
-                  className="rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white hover:opacity-95"
+                  className="rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
                   download={`${p.title.replace(/\s+/g, "-").toLowerCase()}-preview.pdf`}
                   rel="noreferrer"
                 >
                   Download PDF
                 </a>
-
               </li>
             ))}
           </ul>
@@ -91,13 +85,14 @@ export default function DownloadSingle() {
           {/* Support */}
           <div className="mt-8">
             <p className="text-sm opacity-80">
-              For support, contact:{" "}
+              For support, contact{" "}
               <a
                 className="font-medium underline underline-offset-4"
                 href="mailto:support@crowbarltd.com"
               >
                 support@crowbarltd.com
               </a>
+              .
             </p>
           </div>
 
@@ -107,7 +102,6 @@ export default function DownloadSingle() {
           </div>
         </div>
       </div>
-
     </main>
   );
 }
