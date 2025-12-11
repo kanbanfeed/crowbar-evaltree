@@ -107,7 +107,7 @@ export default function TermsPage() {
             <p>Pricing is displayed clearly:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li>Single Brief — $2.99</li>
-              <li>All Briefs — $8.99</li>
+              <li>Five Briefs — $8.99</li>
             </ul>
             <p>Crowbar Ltd may update pricing at any time, but changes will not affect already-completed purchases.</p>
 

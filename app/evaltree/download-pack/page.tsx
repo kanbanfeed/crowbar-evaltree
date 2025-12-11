@@ -53,7 +53,7 @@ export default function DownloadPack() {
           {/* Instruction */}
           <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
             <p className="text-sm font-medium">
-              If you purchased All Briefs, you may download all available briefs.
+              If you purchased Five Briefs, you may download all available briefs.
             </p>
             <p className="mt-2 text-sm opacity-80">
               New briefs will appear here as they are published.

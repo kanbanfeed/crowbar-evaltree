@@ -58,9 +58,9 @@ export default function EvaltreeLanding() {
 
             <a
               href={STRIPE_PACK}
-              className="inline-flex items-center justify-center rounded-xl border border-[#0F1C3F]/15 bg-white px-6 py-3 font-semibold text-[#0F1C3F] hover:bg-[#F5F6F8]"
+              className="inline-flex items-center justify-center rounded-xl border border-[#FF6A00] bg-white px-6 py-3 font-semibold text-[#0F1C3F] hover:bg-[#FF6A00] hover:text-[#ffffff]"
             >
-              Buy All Briefs – $8.99 USD
+              Buy Five Briefs  – $8.99 USD
             </a>
           </div>
 
@@ -89,7 +89,7 @@ export default function EvaltreeLanding() {
       <section id="previews" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-xl font-semibold">Preview Briefs</h2>
-          <p className="hidden text-sm opacity-70 md:block">Free previews (placeholder PDFs).</p>
+          <p className="hidden text-sm opacity-70 md:block">Free previews.</p>
         </div>
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -145,20 +145,20 @@ export default function EvaltreeLanding() {
           </div>
 
           <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">All Briefs — $8.99 USD</div>
-            <div className="mt-2 text-2xl font-semibold">All Briefs</div>
+            <div className="text-sm opacity-70">Five Briefs — $8.99 USD</div>
+            <div className="mt-2 text-2xl font-semibold">Five Briefs</div>
             <div className="mt-2 text-3xl font-semibold">$8.99 USD</div>
 
             <a
               href={STRIPE_PACK}
               className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white hover:opacity-95"
             >
-              Buy All Briefs – $8.99 USD
+              Buy Five Briefs – $8.99 USD
             </a>
 
             {/* ✅ Pricing transparency */}
             <p className="mt-3 text-sm opacity-70">
-              Includes all briefs. Delivered instantly via Stripe email link.
+              Includes Five Briefs. Delivered instantly via Stripe email link.
             </p>
           </div>
         </div>

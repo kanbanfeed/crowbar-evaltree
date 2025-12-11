@@ -67,7 +67,7 @@ export default function Footer(){
                           Buy Single ($2.99)
                         </a>
                         <a href={STRIPE_PACK} className="opacity-80 hover:opacity-100">
-                          Buy All Briefs ($8.99)
+                          Buy Five Briefs ($8.99)
                         </a>
                       </div>
                     </div>

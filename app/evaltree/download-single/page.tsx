@@ -56,7 +56,7 @@ export default function DownloadSingle() {
               If you purchased the Single Brief, please download any one brief.
             </p>
             <p className="mt-2 text-sm opacity-80">
-              If you meant to purchase All Briefs, return to the landing page to choose the correct option.
+              If you meant to purchase Five Briefs, return to the landing page to choose the correct option.
             </p>
           </div>
 
@@ -83,7 +83,7 @@ export default function DownloadSingle() {
                 >
                   Download PDF
                 </a>
-                
+
               </li>
             ))}
           </ul>
