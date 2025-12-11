@@ -35,10 +35,7 @@ export default function TermsPage() {
 
           <div className="mt-6 space-y-6 text-sm leading-relaxed opacity-90">
             <p>
-              Welcome to Evaltree Insights by Crowbar, a product of Crowbar Ltd.
-              By accessing this website or purchasing any Evaltree Insight, you
-              agree to these Terms of Use and Terms of Purchase. Please read
-              them carefully before completing any transaction.
+              Welcome to Evaltree Insights by Crowbar, a product of Crowbar Ltd. By accessing this website or purchasing any Evaltree Insight, you agree to these Terms of Use and Terms of Purchase. 
             </p>
 
             {/* Operator Details */}
@@ -94,18 +91,13 @@ United Kingdom`}
               <h2 className="text-base font-semibold">
                 4. Digital Product Purchases
               </h2>
-              <p className="mt-2">
-                By purchasing an Evaltree Insight, you acknowledge and agree
-                that:
-              </p>
+              
               <ul className="mt-2 list-disc pl-5 space-y-1">
-                <li>All products are digital-only.</li>
+                <li> Digital-only products.</li>
                 <li>Delivery occurs via instant email link after payment.</li>
-                <li>You are responsible for providing a valid email address.</li>
-                <li>
-                  Download links may expire, so you should store your files
-                  promptly.
-                </li>
+                <li>Instant delivery via email link. </li>
+                <li>You must provide a valid email address</li>
+                <li>Download links may expire; store your file promptly. </li>
               </ul>
             </section>
 
@@ -115,15 +107,12 @@ United Kingdom`}
                 5. Consent to Immediate Access &amp; Loss of Cancellation Rights
               </h2>
               <p className="mt-2">
-                By purchasing, you expressly:
+                By purchasing, you:
               </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
                 <li>request immediate access to the digital product,</li>
-                <li>acknowledge that delivery is instant once paid, and</li>
-                <li>
-                  consent to losing your right to cancel once the download link
-                  is issued.
-                </li>
+                <li>acknowledge instant delivery, and</li>
+                <li>provide explicit consent to lose your right to cancel once the download link is issued. </li>
               </ul>
             </section>
 
@@ -133,8 +122,7 @@ United Kingdom`}
                 6. No Refund Policy (Digital Goods)
               </h2>
               <p className="mt-2">
-                All purchases are final once the digital link is delivered.
-                Refunds cannot be offered for:
+                All purchases are final once the digital link is delivered. Refunds cannot be offered for: 
               </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
                 <li>incorrect email entry,</li>
@@ -150,15 +138,13 @@ United Kingdom`}
                 7. License &amp; Usage Rights
               </h2>
               <p className="mt-2">
-                Your purchase grants you a personal, non-transferable,
-                non-exclusive license to access and read the purchased brief.
-                You may not:
+                Your purchase grants a personal, non-transferable, non-exclusive license. You may not: 
               </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
-                <li>copy, reproduce, or redistribute the content,</li>
-                <li>publish or share it online,</li>
-                <li>resell, sublicense, or commercially exploit it, or</li>
-                <li>scrape or mass-extract any content from the product.</li>
+                <li>copy, reproduce, or redistribute</li>
+                <li>publish or share online,</li>
+                <li>resell or sublicense,</li>
+                <li>scrape or mass-extract content. </li>
               </ul>
             </section>
 
@@ -166,10 +152,7 @@ United Kingdom`}
             <section>
               <h2 className="text-base font-semibold">8. Payment Processing</h2>
               <p className="mt-2">
-                Payments are processed by Stripe. Crowbar Ltd does not store,
-                process, or have access to your full card details. By completing
-                a purchase, you also accept Stripe&apos;s terms and privacy
-                policy.
+                Payments processed by Stripe. Crowbar Ltd does not store full card details.
               </p>
             </section>
 
@@ -182,8 +165,7 @@ United Kingdom`}
                 <li>Five Briefs — $8.99</li>
               </ul>
               <p className="mt-2">
-                Pricing may change at any time, but changes will not affect
-                purchases that have already been completed.
+                Pricing may change but not for past purchases. 
               </p>
             </section>
 
@@ -193,15 +175,14 @@ United Kingdom`}
                 10. Delivery &amp; Access Responsibility
               </h2>
               <p className="mt-2">
-                After successful payment, you will receive an email containing
-                your download link. You are responsible for:
+                You are responsible for:
               </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
-                <li>checking spam and junk folders,</li>
-                <li>providing correct contact details, and</li>
-                <li>ensuring your device can open and store PDF files.</li>
+                <li> checking spam/junk filters,</li>
+                <li>providing correct contact details, </li>
+                <li>ensuring your device supports downloads. </li>
               </ul>
-              <p className="mt-2">
+              {/* <p className="mt-2">
                 For assistance, Email:{" "}
                 <a
                   className="underline underline-offset-4"
@@ -210,29 +191,26 @@ United Kingdom`}
                   support@crowbarltd.com
                 </a>
                 .
-              </p>
+              </p> */}
             </section>
 
             {/* 11. Intellectual Property */}
             <section>
               <h2 className="text-base font-semibold">11. Intellectual Property</h2>
               <p className="mt-2">
-                All Evaltree Insights content, PDFs, designs, branding, and
-                written material are owned by Crowbar Ltd and protected by
-                copyright and other intellectual property laws. Unauthorized
-                sharing, reproduction, or redistribution is strictly prohibited.
+                All content is owned by Crowbar Ltd. Unauthorized sharing or redistribution is prohibited.  
               </p>
             </section>
 
             {/* 12. Prohibited Use */}
             <section>
               <h2 className="text-base font-semibold">12. Prohibited Use</h2>
-              <p className="mt-2">You agree not to:</p>
+              <p className="mt-2">You may not: </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
-                <li>scrape, automate, or bot-access the site,</li>
-                <li>interfere with site functionality or security,</li>
-                <li>replicate or reverse engineer the platform, or</li>
-                <li>use any product for unlawful purposes.</li>
+                <li>scrape, automate, or bot-access the site, </li>
+                <li>interfere with site functionality,</li>
+                <li>replicate or reverse engineer the platform, </li>
+                <li>use products illegally.</li>
               </ul>
             </section>
 
@@ -242,11 +220,7 @@ United Kingdom`}
                 13. No Warranties / Informational Use Only
               </h2>
               <p className="mt-2">
-                Evaltree Insights are provided for informational purposes only
-                and do not constitute legal, financial, investment, or other
-                professional advice. While we aim for accuracy, we do not
-                guarantee that the content is complete, up to date, or suitable
-                for your specific situation.
+               Content is informational only, not legal, financial, or investment advice. Accuracy is not guaranteed. 
               </p>
             </section>
 
@@ -254,11 +228,7 @@ United Kingdom`}
             <section>
               <h2 className="text-base font-semibold">14. Limited Liability</h2>
               <p className="mt-2">
-                To the maximum extent permitted by law, Crowbar Ltd shall not be
-                liable for any indirect, incidental, or consequential losses
-                arising from the use of this website or its products. In any
-                event, our total liability is limited to the amount you paid for
-                the relevant purchase.
+                Crowbar Ltd is not liable for indirect or consequential damages. Liability is limited to the purchase amount. 
               </p>
             </section>
 
@@ -266,13 +236,9 @@ United Kingdom`}
             <section>
               <h2 className="text-base font-semibold">15. Technical Requirements</h2>
               <p className="mt-2">
-                You are responsible for maintaining:
+                You are responsible for internet access, device compatibility, and PDF-reading capability. 
               </p>
-              <ul className="mt-2 list-disc pl-5 space-y-1">
-                <li>internet access,</li>
-                <li>a compatible device, and</li>
-                <li>software capable of opening PDF or similar files.</li>
-              </ul>
+              
             </section>
 
             {/* 16. Amendments */}
@@ -281,10 +247,7 @@ United Kingdom`}
                 16. Amendments to These Terms
               </h2>
               <p className="mt-2">
-                Crowbar Ltd may update these Terms at any time. The “Last
-                Updated” date above will reflect the latest version. Continued
-                use of the website after changes are published constitutes
-                acceptance of the updated Terms.
+                Terms may be updated at any time. Continued use signifies acceptance. 
               </p>
             </section>
 
@@ -294,14 +257,12 @@ United Kingdom`}
                 17. Governing Law &amp; Jurisdiction
               </h2>
               <p className="mt-2">
-                These Terms are governed by the laws of England and Wales. Any
+                These Terms are governed by the laws of <b>England and Wales </b>, and any
                 disputes will be resolved exclusively in the courts of England
                 and Wales.
               </p>
               <p className="mt-2 text-sm opacity-85">
-                However, users may also benefit from the protections of
-                mandatory consumer and data-protection laws in their country of
-                residence, where applicable.
+                However, users may also be entitled to the protections of <b> mandatory consumer and data-protection laws in their country of residence, </b> where applicable. 
               </p>
             </section>
 

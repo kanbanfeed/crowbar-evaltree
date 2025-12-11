@@ -68,20 +68,19 @@ export default function CookiePolicyPage() {
               </p>
 
               <h3 className="mt-4 font-medium">
-                B. Analytics Cookies (optional)
+                B. Analytics Cookies (optional)(we don’t use) 
               </h3>
               <p className="mt-2">
-                Analytics cookies are used only if they are enabled and you have
-                given consent. At present, we do not actively use analytics
-                cookies, but examples of tools that may be used in future
-                include:
+               These are used only if enabled and only after you give consent. 
+              <br/>
+              Examples include: 
               </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
                 <li>Vercel Analytics</li>
                 <li>Google Analytics</li>
               </ul>
               <p className="mt-2">
-                These cookies help measure:
+                They help measure: 
               </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
                 <li>traffic patterns</li>
@@ -152,15 +151,14 @@ export default function CookiePolicyPage() {
               </p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
                 <li>
-                  Essential cookies are typically session-based or short-term.
+                  Essential cookies: session-based or short-term.
                 </li>
                 <li>
-                  Analytics cookies (if used) may remain for several days or
-                  months, depending on provider settings.
+                  Analytics cookies: may persist for several days or months, depending on provider settings.
                 </li>
               </ul>
               <p className="mt-2 text-sm opacity-85">
-                More information about how we handle data is available in our{" "}
+                Details are available in our{" "}
                 <a
                   className="underline underline-offset-4"
                   href="/evaltree/privacy"
@@ -185,8 +183,7 @@ export default function CookiePolicyPage() {
                 <li>restrict or disable cookies via browser or device settings.</li>
               </ul>
               <p className="mt-2 text-sm opacity-85">
-                Consent can be withdrawn at any time by adjusting settings in
-                your browser or using any cookie controls provided on the site.
+                Consent can be withdrawn at any time via browser settings or the cookie banner. 
               </p>
             </section>
 
