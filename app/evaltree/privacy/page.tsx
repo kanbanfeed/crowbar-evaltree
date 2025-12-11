@@ -105,12 +105,7 @@ export default function PrivacyPolicyPage() {
 
             <h2 className="text-base font-semibold opacity-100">6. Your Rights</h2>
             <p>
-              You may request access, correction, or deletion of your personal data where applicable.
-              Contact{" "}
-              <a className="underline underline-offset-4" href="mailto:support@crowbarltd.com">
-                support@crowbarltd.com
-              </a>
-              .
+              You may request access, correction, or deletion of your personal data where applicable.              .
             </p>
 
             <h2 className="text-base font-semibold opacity-100">7. Contact</h2>
