@@ -32,7 +32,7 @@ export default function Footer(){
         
                       {/* ✅ Company details required */}
                       <div className="mt-4 text-sm opacity-75">
-                        <b >Support:</b>{" "}
+                        <b >Contact</b>{" "}
                         <a
                           className="font-medium underline underline-offset-4"
                           href="mailto:support@crowbarltd.com"
