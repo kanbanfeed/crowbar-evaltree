@@ -85,7 +85,7 @@ export default function DownloadSingle() {
           {/* Support */}
           <div className="mt-8">
             <p className="text-sm opacity-80">
-              For support, contact{" "}
+              For support, contact:{" "}
               <a
                 className="font-medium underline underline-offset-4"
                 href="mailto:support@crowbarltd.com"

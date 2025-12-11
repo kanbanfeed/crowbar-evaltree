@@ -202,7 +202,7 @@ United Kingdom`}
                 <li>ensuring your device can open and store PDF files.</li>
               </ul>
               <p className="mt-2">
-                For assistance, email{" "}
+                For assistance, Email:{" "}
                 <a
                   className="underline underline-offset-4"
                   href="mailto:support@crowbarltd.com"
