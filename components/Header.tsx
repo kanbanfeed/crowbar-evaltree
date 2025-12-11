@@ -12,7 +12,7 @@ export default function Header() {
   return (
 
  <header className="sticky top-0 z-50 border-b border-[#0F1C3F]/10 bg-white/85 backdrop-blur">
-        <div className=" flex w-full items-center justify-between gap-4 px-6 py-4">
+        <div className=" flex w-full items-center justify-between gap-4 px-16 py-4">
           {/* Brand */}
           <a href="#top" className="flex items-center gap-3">
             <div className="h-9 w-9 rounded-xl bg-[#0F1C3F]" />
@@ -38,7 +38,7 @@ export default function Header() {
           </nav>
 
           {/* Right actions */}
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <a
               href="mailto:support@crowbarltd.com"
               className="hidden text-sm font-medium opacity-80 hover:opacity-100 md:inline"
@@ -52,7 +52,7 @@ export default function Header() {
             >
               Buy Single Brief – $2.99 USD
             </a>
-          </div>
+          </div> */}
         </div>
 
         {/* Mobile nav */}
