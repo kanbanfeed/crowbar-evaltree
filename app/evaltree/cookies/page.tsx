@@ -160,7 +160,7 @@ export default function CookiePolicyPage() {
               <p className="mt-2 text-sm opacity-85">
                 Details are available in our{" "}
                 <a
-                  className="underline underline-offset-4"
+                  className="hover:text-blue-400"
                   href="/evaltree/privacy"
                 >
                   Privacy Policy
