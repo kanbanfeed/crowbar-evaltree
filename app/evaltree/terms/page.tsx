@@ -58,11 +58,11 @@ export default function TermsPage() {
                 Registered address:
                 <div className="mt-1 whitespace-pre-line">
                   {CROWBAR_REGISTERED_ADDRESS || `Crowbar Ventures Limited
-71–75 Shelton Street
-Covent Garden
-London
-WC2H 9JQ
-United Kingdom`}
+                  71–75 Shelton Street
+                  Covent Garden
+                  London
+                  WC2H 9JQ
+                  United Kingdom`}
                 </div>
               </div>
             </section>
@@ -129,6 +129,7 @@ United Kingdom`}
                 <li>failure to download before link expiration,</li>
                 <li>dissatisfaction with the content, or</li>
                 <li>technical issues on your device or network.</li>
+                <li><b>No refunds once digital content is delivered and accessed.</b></li>
               </ul>
             </section>
 
