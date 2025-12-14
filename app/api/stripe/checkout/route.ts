@@ -1,0 +1,90 @@
+import Stripe from "stripe";
+import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-07-30.basil",
+});
+
+type Plan = "single" | "pack";
+
+export async function POST(req: Request) {
+  try {
+    // 1) Parse request safely
+    let body: any = {};
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    const plan = body?.plan as Plan | undefined;
+    if (!plan || (plan !== "single" && plan !== "pack")) {
+      return NextResponse.json(
+        { error: "Missing/invalid 'plan'. Must be 'single' or 'pack'." },
+        { status: 400 }
+      );
+    }
+
+    // 2) Validate env
+    const secret = process.env.STRIPE_SECRET_KEY;
+    if (!secret) {
+      return NextResponse.json(
+        { error: "STRIPE_SECRET_KEY is missing on server" },
+        { status: 500 }
+      );
+    }
+
+    const origin =
+      req.headers.get("origin") ||
+      process.env.NEXT_PUBLIC_SITE_URL ||
+      "http://localhost:3000";
+
+    // 3) Price config (use your real Stripe price IDs if you have them)
+    // Best practice: use price IDs instead of amount.
+    // If you don't have Price IDs, tell me and I’ll adapt this.
+    const singlePriceId = process.env.STRIPE_PRICE_SINGLE;
+    const packPriceId = process.env.STRIPE_PRICE_PACK;
+
+    if (!singlePriceId || !packPriceId) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing STRIPE_PRICE_SINGLE or STRIPE_PRICE_PACK in env. Create Stripe Prices and set these env vars.",
+        },
+        { status: 500 }
+      );
+    }
+
+    const price = plan === "single" ? singlePriceId : packPriceId;
+
+    // 4) Create checkout session
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      customer_creation: "always",
+      line_items: [{ price, quantity: 1 }],
+      allow_promotion_codes: false,
+
+      // IMPORTANT: correct redirects
+      success_url:
+        plan === "single"
+          ? `${origin}/evaltree/download-single?session_id={CHECKOUT_SESSION_ID}`
+          : `${origin}/evaltree/download-pack?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/evaltree?canceled=1`,
+
+      metadata: {
+        plan,
+        source: "evaltree",
+      },
+    });
+
+    return NextResponse.json({ url: session.url });
+  } catch (e: any) {
+    console.error("Checkout error:", e?.message || e);
+    return NextResponse.json(
+      { error: e?.message || "Checkout failed" },
+      { status: 500 }
+    );
+  }
+}

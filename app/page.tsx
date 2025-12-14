@@ -1,35 +1,56 @@
-const STRIPE_SINGLE = "https://buy.stripe.com/dRm7sK8uLaA89lNcL77Vm0J";
-const STRIPE_PACK = "https://buy.stripe.com/bJe14mdP5eQo2Xp9yV7Vm0K";
+"use client";
 
-// ✅ Add official registered address here (required in footer for compliance)
-export const metadata = {
-  title: "Evaltree Insights by Crowbar — 5-Minute Expert Briefs",
-  description:
-    "Concise 3–5 page expert briefs. Buy one brief or unlock the full bundle with instant delivery after payment.",
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+
+type Brief = {
+  id: string;
+  title: string;
+  slug: string;
+  preview_url: string;
 };
 
-const previews = [
-  {
-    title: "AI Safety 2025",
-    copyLine:
-      "A practical overview of the biggest AI safety risks, governance moves, and what to watch next.",
-    href: "/evaltree/pdfs/ai-safety-2025-preview.pdf",
-  },
-  {
-    title: "Startup Valuation 2025",
-    copyLine:
-      "A fast guide to modern valuation methods, key drivers, and market benchmarks for 2025.",
-    href: "/evaltree/pdfs/startup-valuation-2025-preview.pdf",
-  },
-  {
-    title: "Geopolitics 2025",
-    copyLine:
-      "A concise brief on global power shifts, regional flashpoints, and implications for business.",
-    href: "/evaltree/pdfs/geopolitics-2025-preview.pdf",
-  },
-];
-
 export default function EvaltreeLanding() {
+  const { user, loading, signInWithCrowbar } = useAuth();
+  const isLoggedIn = !!user?.email;
+
+  const [briefs, setBriefs] = useState<Brief[]>([]);
+  const [count, setCount] = useState<number>(0);
+
+  const packEnabled = count >= 5;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r1 = await fetch("/api/briefs", { cache: "no-store" });
+        const d1 = await r1.json();
+        setBriefs(d1.briefs || []);
+
+        const r2 = await fetch("/api/briefs/count", { cache: "no-store" });
+        const d2 = await r2.json();
+        setCount(d2.count || 0);
+      } catch {
+        setBriefs([]);
+        setCount(0);
+      }
+    })();
+  }, []);
+
+  async function startCheckout(plan: "single" | "pack") {
+    // 🔒 Hard block if not logged in
+    if (!isLoggedIn) return;
+
+    const r = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan }),
+    });
+
+    const d = await r.json();
+    if (d.url) window.location.href = d.url;
+    else alert(d.error || "Checkout failed");
+  }
+
   return (
     <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
       {/* Hero */}
@@ -48,29 +69,66 @@ export default function EvaltreeLanding() {
             Understand anything in 5 minutes.
           </p>
 
+          {/* ✅ Optional: show login prompt in hero if not logged in */}
+          {!loading && !isLoggedIn && (
+            <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
+              <div className="text-sm font-semibold">Login required</div>
+              <p className="mt-1 text-sm opacity-80">
+                To purchase and access paid briefs, please log in with your Crowbar account.
+              </p>
+              <button
+                onClick={signInWithCrowbar}
+                className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-95"
+              >
+                Continue with Crowbar
+              </button>
+            </div>
+          )}
+
+          {/* CTA Buttons */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            {/* Primary CTA – stronger hover/active/focus */}
-            <a
-              href={STRIPE_SINGLE}
-              className="inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white shadow-sm transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
+            <button
+              onClick={() => startCheckout("single")}
+              disabled={!isLoggedIn}
+              className={[
+                "inline-flex items-center justify-center rounded-xl px-6 py-3 font-semibold shadow-sm transition-transform transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]",
+                isLoggedIn
+                  ? "bg-[#FF6A00] text-white hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px]"
+                  : "cursor-not-allowed bg-[#9aa0aa] text-white/90",
+              ].join(" ")}
             >
               Buy Single Brief – $2.99 USD
-            </a>
+            </button>
 
-            {/* Secondary CTA – much clearer change on hover/active */}
-            <a
-              href={STRIPE_PACK}
-              className="inline-flex items-center justify-center rounded-xl border border-[#FF6A00] bg-white px-6 py-3 font-semibold text-[#0F1C3F] transition-transform transition-colors duration-150 ease-out hover:bg-[#FF6A00] hover:text-white hover:shadow-md active:bg-[#e65f00] active:text-white active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
+            <button
+              onClick={() => packEnabled && startCheckout("pack")}
+              disabled={!isLoggedIn || !packEnabled}
+              className={[
+                "inline-flex items-center justify-center rounded-xl border px-6 py-3 font-semibold transition-transform transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]",
+                isLoggedIn && packEnabled
+                  ? "border-[#FF6A00] bg-white text-[#0F1C3F] hover:bg-[#FF6A00] hover:text-white hover:shadow-md active:bg-[#e65f00] active:text-white active:scale-95 active:translate-y-[1px]"
+                  : "cursor-not-allowed border-[#0F1C3F]/20 bg-[#F5F6F8] text-[#0F1C3F]/50",
+              ].join(" ")}
             >
-              Buy Five Briefs  – $8.99 USD
-            </a>
+              Buy Five Briefs – $8.99 USD
+            </button>
           </div>
 
-          {/* ✅ Removed repeated payment/Stripe disclaimer from hero as per guidance */}
+          {!packEnabled && (
+            <p className="mt-4 text-sm opacity-70">
+              The 5-brief bundle will be available once five briefs are published.
+            </p>
+          )}
+
+          {!isLoggedIn && (
+            <p className="mt-3 text-sm opacity-70">
+              Purchases are available after login.
+            </p>
+          )}
         </div>
       </section>
 
-      {/* About */}
+      {/* About (public) */}
       <section id="about" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
         <div className="grid gap-6 rounded-3xl bg-white p-8 shadow-sm md:grid-cols-3 md:p-10">
           <div className="md:col-span-1">
@@ -87,7 +145,7 @@ export default function EvaltreeLanding() {
         </div>
       </section>
 
-      {/* Preview */}
+      {/* Preview (public) */}
       <section id="previews" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-xl font-semibold">Preview Briefs</h2>
@@ -95,9 +153,9 @@ export default function EvaltreeLanding() {
         </div>
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {previews.map((p) => (
+          {briefs.map((p) => (
             <div
-              key={p.title}
+              key={p.id}
               className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-3">
@@ -108,12 +166,10 @@ export default function EvaltreeLanding() {
               </div>
 
               <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm opacity-75">{p.copyLine}</p>
+              <p className="mt-2 text-sm opacity-75">Download a free preview.</p>
 
               <a
-                href={p.href}
-                download={`${p.title.replace(/\s+/g, "-").toLowerCase()}-preview.pdf`}
-                rel="noreferrer"
+                href={`/api/preview-download?slug=${encodeURIComponent(p.slug)}`}
                 className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
               >
                 Download Free Preview
@@ -123,82 +179,115 @@ export default function EvaltreeLanding() {
         </div>
       </section>
 
-      {/* Pricing */}
+      {/* 🔒 Pricing section locked overlay */}
       <section id="pricing" className="mx-auto max-w-6xl px-6 pb-12 scroll-mt-24">
-        <h2 className="mb-4 text-xl font-semibold">Pricing</h2>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Single Brief — $2.99 USD</div>
-            <div className="mt-2 text-2xl font-semibold">Single Brief</div>
-            <div className="mt-2 text-3xl font-semibold">$2.99 USD</div>
-
-            <a
-              href={STRIPE_SINGLE}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
-            >
-              Buy Single Brief – $2.99 USD
-            </a>
-
-            {/* ✅ Pricing transparency */}
-            <p className="mt-3 text-sm opacity-70">
-              Includes one research brief of your choice. Delivered instantly via Stripe email link.
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Five Briefs — $8.99 USD</div>
-            <div className="mt-2 text-2xl font-semibold">Five Briefs</div>
-            <div className="mt-2 text-3xl font-semibold">$8.99 USD</div>
-
-            <a
-              href={STRIPE_PACK}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
-            >
-              Buy Five Briefs – $8.99 USD
-            </a>
-
-            {/* ✅ Pricing transparency */}
-            <p className="mt-3 text-sm opacity-70">
-              Includes Five Briefs. Delivered instantly via Stripe email link.
-            </p>
-          </div>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold">Pricing</h2>
+          {!loading && !isLoggedIn && (
+            <span className="rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
+              Login required
+            </span>
+          )}
         </div>
 
-        <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="text-sm font-semibold">Important information</div>
-              <p className="mt-2 text-sm leading-relaxed opacity-80">
-                Evaltree Insights are informational research briefs only and do not constitute legal, financial, or investment advice.
-                Please read the{" "}
-                <a
-                  href="/evaltree/terms"
-                  className="font-medium underline underline-offset-4"
+        <div className="relative">
+          {/* Actual pricing UI (unchanged) */}
+          <div className={isLoggedIn ? "" : "pointer-events-none select-none blur-[2px] opacity-70"}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl bg-white p-7 shadow-sm">
+                <div className="text-sm opacity-70">Single Brief — $2.99 USD</div>
+                <div className="mt-2 text-2xl font-semibold">Single Brief</div>
+                <div className="mt-2 text-3xl font-semibold">$2.99 USD</div>
+
+                <button
+                  onClick={() => startCheckout("single")}
+                  className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
                 >
-                  Terms of Use / Terms of Purchase
-                </a>{" "}
-                before buying.
-              </p>
+                  Buy Single Brief – $2.99 USD
+                </button>
+
+                <p className="mt-3 text-sm opacity-70">
+                  Includes one research brief of your choice. Delivered instantly via Stripe email link.
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-white p-7 shadow-sm">
+                <div className="text-sm opacity-70">Five Briefs — $8.99 USD</div>
+                <div className="mt-2 text-2xl font-semibold">Five Briefs</div>
+                <div className="mt-2 text-3xl font-semibold">$8.99 USD</div>
+
+                <button
+                  onClick={() => packEnabled && startCheckout("pack")}
+                  disabled={!packEnabled}
+                  className={[
+                    "mt-6 inline-flex w-full items-center justify-center rounded-xl px-6 py-3 font-semibold transition-transform transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]",
+                    packEnabled
+                      ? "bg-[#FF6A00] text-white hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px]"
+                      : "cursor-not-allowed bg-[#9aa0aa] text-white/90",
+                  ].join(" ")}
+                >
+                  Buy Five Briefs – $8.99 USD
+                </button>
+
+                <p className="mt-3 text-sm opacity-70">
+                  Includes Five Briefs. Delivered instantly via Stripe email link.
+                </p>
+
+                {!packEnabled && (
+                  <p className="mt-3 text-sm opacity-70">
+                    The 5-brief bundle will be enabled when 5 briefs are available.
+                  </p>
+                )}
+              </div>
             </div>
 
-            <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
-              Not advice
-            </span>
+            <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
+              <div>
+                <div className="text-sm font-semibold flex items-start justify-between">
+                  <h3>Important information</h3>
+                  <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
+                    Not advice
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed opacity-80">
+                  Evaltree Insights are informational research briefs only and do not constitute legal, financial, or investment advice.
+                  Please read the{" "}
+                  <a href="/evaltree/terms" className="font-medium underline underline-offset-4">
+                    Terms of Use / Terms of Purchase
+                  </a>{" "}
+                  before buying.
+                </p>
+              </div>
+
+              <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
+                <div className="text-sm font-semibold">Payments & delivery</div>
+                <ul className="mt-2 space-y-2 text-sm opacity-80">
+                  <li>Payments processed securely by Crowbar Ltd.</li>
+                  <li>Transactions are handled by Stripe and delivered instantly upon payment.</li>
+                  <li>All purchases are non-refundable due to the digital nature of the product.</li>
+                </ul>
+              </div>
+            </div>
           </div>
 
-          <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
-            <div className="text-sm font-semibold">Payments & delivery</div>
-            <ul className="mt-2 space-y-2 text-sm opacity-80">
-              <li>Payments processed securely by Crowbar Ltd.</li>
-              <li>Transactions are handled by Stripe and delivered instantly upon payment.</li>
-              <li>All purchases are non-refundable due to the digital nature of the product.</li>
-            </ul>
-          </div>
+          {/* Overlay CTA when logged out */}
+          {!loading && !isLoggedIn && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="mx-auto max-w-md rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 text-center shadow-sm">
+                <div className="text-base font-semibold">Login to purchase</div>
+                <p className="mt-2 text-sm opacity-80">
+                  Please log in with your Crowbar account to unlock pricing and complete checkout.
+                </p>
+                <button
+                  onClick={signInWithCrowbar}
+                  className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-95"
+                >
+                  Continue with Crowbar
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-
-        {/* ✅ Contact / Support micro-section */}
-        {/* (commented out as per your current version) */}
       </section>
     </main>
   );
