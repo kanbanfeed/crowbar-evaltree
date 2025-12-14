@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import DownloadSingleClient from "./DownloadSingleClient";
 
 export const metadata = {
@@ -7,5 +8,9 @@ export const metadata = {
 };
 
 export default function DownloadSinglePage() {
-  return <DownloadSingleClient />;
+  return (
+    <Suspense fallback={<div className="min-h-screen grid place-items-center">Loading…</div>}>
+      <DownloadSingleClient />
+    </Suspense>
+  );
 }
