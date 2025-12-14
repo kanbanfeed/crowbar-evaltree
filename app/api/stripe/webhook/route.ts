@@ -15,10 +15,14 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(req: Request) {
-  const sig = headers().get("stripe-signature");
+  // ✅ FIX: headers() is async in your Next.js version
+  const sig = (await headers()).get("stripe-signature");
 
   if (!sig) {
-    return NextResponse.json({ error: "Missing stripe-signature" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing stripe-signature" },
+      { status: 400 }
+    );
   }
 
   let event: Stripe.Event;
@@ -33,8 +37,11 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err: any) {
-    console.error("❌ Webhook signature verification failed:", err.message);
-    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+    console.error("❌ Webhook signature verification failed:", err?.message || err);
+    return NextResponse.json(
+      { error: `Webhook Error: ${err?.message || "Invalid signature"}` },
+      { status: 400 }
+    );
   }
 
   try {
@@ -99,7 +106,7 @@ export async function POST(req: Request) {
 
       // ✅ Send Brevo email (DO NOT crash webhook if it fails)
       try {
-        await sendEvaltreeThankYouEmail({ to: email, plan, sessionId: session.id });
+        await sendEvaltreeThankYouEmail({ to: email, plan, sessionId });
 
         await supabaseAdmin
           .from("purchases")
