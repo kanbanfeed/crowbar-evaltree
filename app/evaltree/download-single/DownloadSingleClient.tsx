@@ -281,15 +281,18 @@ export default function DownloadSingleClient() {
                   key={p.id}
                   className="flex items-center justify-between gap-3 rounded-2xl bg-[#F5F6F8] p-4"
                 >
-                  <span className="font-medium">{p.title}</span>
+                  <span className="flex-1 min-w-0 font-medium">
+                    {p.title}
+                  </span>
 
                   <button
                     onClick={() => handleDownload(p.slug)}
-                    className="rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
+                    className="shrink-0 whitespace-nowrap rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
                   >
                     Download PDF
                   </button>
                 </li>
+
               ))}
             </ul>
           )}
