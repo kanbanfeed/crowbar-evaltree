@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
@@ -16,12 +16,35 @@ export default function Header() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  // ✅ Used to detect outside tap
+  const headerRef = useRef<HTMLElement | null>(null);
+
   function handleMobileNavClick() {
     setMobileOpen(false);
   }
 
+  // ✅ Close mobile menu when user taps/clicks outside the header/menu area
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    function onPointerDown(e: PointerEvent) {
+      const el = headerRef.current;
+      if (!el) return;
+
+      if (!el.contains(e.target as Node)) {
+        setMobileOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [mobileOpen]);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[#0F1C3F]/10 bg-white/85 backdrop-blur">
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-50 relative border-b border-[#0F1C3F]/10 bg-white/85 backdrop-blur"
+    >
       <div className="flex w-full items-center justify-between gap-4 px-6 py-4 md:px-16">
         {/* Brand */}
         <a href="#top" className="flex items-center gap-3">
@@ -108,14 +131,14 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu Panel */}
+      {/* ✅ Mobile Menu Panel (overlay; does NOT push content) */}
       <div
-        className={`md:hidden overflow-hidden transition-[max-height] duration-200 ease-out ${
-          mobileOpen ? "max-h-96" : "max-h-0"
+        className={`md:hidden absolute left-0 right-0 top-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${
+          mobileOpen ? "max-h-96 opacity-100 pointer-events-auto" : "max-h-0 opacity-0 pointer-events-none"
         }`}
       >
         <div className="px-6 pb-4">
-          <div className="rounded-2xl border border-[#0F1C3F]/10 bg-white p-3">
+          <div className="rounded-2xl border border-[#0F1C3F]/10 bg-white p-3 shadow-sm">
             <div className="flex flex-col gap-2">
               {navItems.map((item) => (
                 <a

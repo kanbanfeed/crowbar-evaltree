@@ -259,7 +259,7 @@ export default function DownloadPackClient() {
           {/* Instruction */}
           <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
             <p className="text-sm font-medium">
-              If you purchased Five Briefs, you may download up to five briefs.
+              If you purchase the Five Brief option, you may download Five brief of your choice from the available list.
             </p>
             <p className="mt-2 text-sm opacity-80">
               If you meant to purchase a Single Brief, return to the landing page to choose the correct option.
