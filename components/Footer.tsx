@@ -1,10 +1,10 @@
 import { CROWBAR_REGISTERED_ADDRESS } from "../app/evaltree/_legal";
 
 const navItems = [
-  { label: "Home", href: "#top" },
-  { label: "About", href: "#about" },
-  { label: "Previews", href: "#previews" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Home", href: "/#top" },
+  { label: "About", href: "/#about" },
+  { label: "Previews", href: "/#previews" },
+  { label: "Pricing", href: "/#pricing" },
 ];
 
 const STRIPE_SINGLE = "https://buy.stripe.com/dRm7sK8uLaA89lNcL77Vm0J";
@@ -54,12 +54,12 @@ export default function Footer() {
                   {item.label}
                 </a>
               ))}
-              <a href={STRIPE_SINGLE} className="opacity-80 hover:opacity-100">
+              {/* <a href={STRIPE_SINGLE} className="opacity-80 hover:opacity-100">
                 Buy Single ($2.99)
               </a>
               <a href={STRIPE_PACK} className="opacity-80 hover:opacity-100">
                 Buy Five Briefs ($8.99)
-              </a>
+              </a> */}
             </div>
           </div>
 
