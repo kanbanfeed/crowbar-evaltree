@@ -47,8 +47,8 @@ export async function GET(req: Request) {
     return new NextResponse(arrayBuffer, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${safeName}"`,
-        "Cache-Control": "private, no-store",
+        "Content-Disposition": `inline; filename="${safeName}"`,
+        "Cache-Control": "no-store",
       },
     });
   } catch (err: any) {

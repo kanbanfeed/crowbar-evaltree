@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 
 type Brief = {
@@ -18,6 +19,11 @@ export default function EvaltreeLanding() {
   const [count, setCount] = useState<number>(0);
 
   const packEnabled = count >= 5;
+
+  // ✅ Preview modal state (ONLY affects preview section)
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewSlug, setPreviewSlug] = useState<string | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<string>("");
 
   useEffect(() => {
     (async () => {
@@ -49,6 +55,18 @@ export default function EvaltreeLanding() {
     const d = await r.json();
     if (d.url) window.location.href = d.url;
     else alert(d.error || "Checkout failed");
+  }
+
+  function openPreview(slug: string, title: string) {
+    setPreviewSlug(slug);
+    setPreviewTitle(title);
+    setPreviewOpen(true);
+  }
+
+  function closePreview() {
+    setPreviewOpen(false);
+    setPreviewSlug(null);
+    setPreviewTitle("");
   }
 
   return (
@@ -145,7 +163,7 @@ export default function EvaltreeLanding() {
         </div>
       </section>
 
-      {/* Preview (public) */}
+      {/* ✅ Preview (public) — UPDATED ONLY HERE */}
       <section id="previews" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
         <div className="flex items-end justify-between gap-4">
           <h2 className="text-xl font-semibold">Preview Briefs</h2>
@@ -166,18 +184,68 @@ export default function EvaltreeLanding() {
               </div>
 
               <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm opacity-75">Download a free preview.</p>
+              <p className="mt-2 text-sm opacity-75">
+                View a short preview. Full PDF opens only after purchase.
+              </p>
 
-              <a
-                href={`/api/preview-download?slug=${encodeURIComponent(p.slug)}`}
+              <button
+                onClick={() => openPreview(p.slug, p.title)}
                 className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
               >
-                Download Free Preview
-              </a>
+                View Preview
+              </button>
             </div>
           ))}
         </div>
       </section>
+
+      {/* ✅ Preview Modal */}
+      {previewOpen && previewSlug && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Preview modal"
+        >
+          <div className="absolute inset-0 bg-black/40" onClick={closePreview} />
+
+          <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-[#0F1C3F]/10 p-4">
+              <div className="text-sm font-semibold">{previewTitle}</div>
+              <button
+                onClick={closePreview}
+                className="rounded-xl border border-[#0F1C3F]/15 bg-white px-3 py-1.5 text-sm font-semibold hover:bg-[#F5F6F8]"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="relative">
+              <iframe
+                src={`/api/preview-download?slug=${encodeURIComponent(previewSlug)}`}
+                className="h-[75vh] w-full"
+                title="Preview PDF"
+              />
+
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white via-white/90 to-transparent" />
+
+              <div className="absolute inset-x-0 bottom-4 flex flex-col items-center gap-2 px-4">
+                <div className="rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
+                  Preview ends here
+                </div>
+
+                <Link
+                  href="/#pricing"
+                  onClick={closePreview}
+                  className="rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95"
+                >
+                  Go to Pricing to unlock full PDF
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 🔒 Pricing section locked overlay */}
       <section id="pricing" className="mx-auto max-w-6xl px-6 pb-12 scroll-mt-24">
