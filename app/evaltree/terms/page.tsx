@@ -168,6 +168,9 @@ export default function TermsPage() {
               <p className="mt-2">
                 Pricing may change but not for past purchases. 
               </p>
+              <p className="mt-2">
+                All prices are exclusive of VAT. Crowbar Ventures Ltd is not currently VAT registered. VAT may be charged if required by law.
+              </p>
             </section>
 
             {/* 10. Delivery & Access Responsibility */}
