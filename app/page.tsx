@@ -132,6 +132,11 @@ export default function EvaltreeLanding() {
             </button>
           </div>
 
+          {/* ✅ VAT note (Hero / Buy buttons area) */}
+          <p className="mt-3 text-xs opacity-70">
+            Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
+          </p>
+
           {!packEnabled && (
             <p className="mt-4 text-sm opacity-70">
               The 5-brief bundle will be available once five briefs are published.
@@ -274,6 +279,11 @@ export default function EvaltreeLanding() {
                   Buy Single Brief – $2.99 USD
                 </button>
 
+                {/* ✅ VAT note under price (Pricing card) */}
+                <p className="mt-2 text-xs opacity-70">
+                  Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
+                </p>
+
                 <p className="mt-3 text-sm opacity-70">
                   Includes one research brief of your choice. Delivered instantly via Stripe email link.
                 </p>
@@ -296,6 +306,11 @@ export default function EvaltreeLanding() {
                 >
                   Buy Five Briefs – $8.99 USD
                 </button>
+
+                {/* ✅ VAT note under price (Pricing card) */}
+                <p className="mt-2 text-xs opacity-70">
+                  Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
+                </p>
 
                 <p className="mt-3 text-sm opacity-70">
                   Includes Five Briefs. Delivered instantly via Stripe email link.
@@ -320,15 +335,21 @@ export default function EvaltreeLanding() {
                 <p className="mt-2 text-sm leading-relaxed opacity-80">
                   Evaltree Insights are informational research briefs only and do not constitute legal, financial, or investment advice.
                   Please read the{" "}
-                  <a href="/evaltree/terms" className="font-medium underline underline-offset-4">
+                  <Link href="/evaltree/terms" className="font-medium underline underline-offset-4">
                     Terms of Use / Terms of Purchase
-                  </a>{" "}
+                  </Link>{" "}
                   before buying.
                 </p>
               </div>
 
               <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
                 <div className="text-sm font-semibold">Payments & delivery</div>
+
+                {/* ✅ VAT note near final decision before payment */}
+                <p className="mt-2 text-xs opacity-70">
+                  Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
+                </p>
+
                 <ul className="mt-2 space-y-2 text-sm opacity-80">
                   <li>Payments processed securely by Crowbar Ltd.</li>
                   <li>Transactions are handled by Stripe and delivered instantly upon payment.</li>

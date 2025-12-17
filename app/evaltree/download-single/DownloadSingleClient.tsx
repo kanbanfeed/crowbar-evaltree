@@ -81,7 +81,7 @@ export default function DownloadSingleClient() {
   const [briefs, setBriefs] = useState<Brief[]>([]);
   const [purchase, setPurchase] = useState<Purchase | null>(null);
   const [loading, setLoading] = useState(true);
-
+  const [purchasedSlugs, setPurchasedSlugs] = useState<string[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalTitle, setModalTitle] = useState("");
   const [modalMessage, setModalMessage] = useState("");
@@ -140,6 +140,13 @@ export default function DownloadSingleClient() {
         const vj = await vr.json();
         setPurchase(vj.purchase);
 
+        const pr = await fetch("/api/purchase/purchased-briefs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId }),
+        });
+        const pj = await pr.json();
+        setPurchasedSlugs(pj.slugs || []);
         // Load briefs list
         const br = await fetch("/api/briefs", { cache: "no-store" });
         const bd = await br.json();
@@ -192,8 +199,19 @@ export default function DownloadSingleClient() {
     return;
   }
 
+  // ✅ If already purchased, still allow re-download (no payment again)
+  if (d?.alreadyPurchased) {
+    showModal({
+      title: "Already purchased",
+      message:
+        "You’ve already purchased this brief. Your download will start now.",
+      primaryLabel: "OK",
+      primaryHref: "/evaltree",
+    });
+  }
+
   if (d?.url) {
-    window.location.href = d.url; // this now points to /api/paid-download...
+    window.location.href = d.url; // /api/paid-download...
     return;
   }
 
@@ -205,6 +223,7 @@ export default function DownloadSingleClient() {
     primaryHref: "/",
   });
 }
+
 
 
   return (
@@ -275,27 +294,42 @@ export default function DownloadSingleClient() {
 
           {/* List */}
           {!loading && (
-            <ul className="mt-6 space-y-3">
-              {briefs.map((p) => (
-                <li
-                  key={p.id}
-                  className="flex items-center justify-between gap-3 rounded-2xl bg-[#F5F6F8] p-4"
-                >
-                  <span className="flex-1 min-w-0 font-medium">
-                    {p.title}
-                  </span>
+  <ul className="mt-6 space-y-3">
+    {briefs.map((p) => {
+      const alreadyPurchased = purchasedSlugs.includes(p.slug); // ✅ define here
 
-                  <button
-                    onClick={() => handleDownload(p.slug)}
-                    className="shrink-0 whitespace-nowrap rounded-xl bg-[#FF6A00] px-4 py-2 text-sm font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
-                  >
-                    Download PDF
-                  </button>
-                </li>
+      return (
+        <li
+          key={p.id}
+          className="flex items-center justify-between gap-3 rounded-2xl bg-[#F5F6F8] p-4"
+        >
+          <span className="flex-1 min-w-0 font-medium">{p.title}</span>
 
-              ))}
-            </ul>
-          )}
+          <div className="flex flex-col items-end gap-1">
+            <button
+              onClick={() => handleDownload(p.slug)}
+              className={[
+                "shrink-0 whitespace-nowrap rounded-xl px-4 py-2 text-sm font-semibold text-white transition-transform transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]",
+                alreadyPurchased
+                  ? "bg-[#0F1C3F] hover:opacity-95 focus-visible:ring-[#0F1C3F]"
+                  : "bg-[#FF6A00] hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:ring-[#FF6A00]",
+              ].join(" ")}
+            >
+              {alreadyPurchased ? "Download Again" : "Download PDF"}
+            </button>
+
+            {alreadyPurchased && (
+              <div className="text-xs opacity-70">
+                You have already purchased this PDF.
+              </div>
+            )}
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+)}
+
 
           {/* Support */}
           <div className="mt-8">
