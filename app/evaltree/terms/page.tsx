@@ -98,6 +98,7 @@ export default function TermsPage() {
                 <li>Instant delivery via email link. </li>
                 <li>You must provide a valid email address</li>
                 <li>Download links may expire; store your file promptly. </li>
+                <li>All digital content provided by Evaltree Insights is licensed, not sold.</li>
               </ul>
             </section>
 
@@ -146,6 +147,7 @@ export default function TermsPage() {
                 <li>publish or share online,</li>
                 <li>resell or sublicense,</li>
                 <li>scrape or mass-extract content. </li>
+                <li>All digital content provided by Evaltree Insights is licensed, not sold.</li>
               </ul>
             </section>
 
