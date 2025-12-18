@@ -234,6 +234,7 @@ export default function EvaltreeLanding() {
             const alreadyPurchased =
               isLoggedIn && !purchasedLoading && purchasedSlugs.includes(p.slug);
 
+              
             return (
               <div
                 key={p.id}
