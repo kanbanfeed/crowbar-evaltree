@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { CROWBAR_REGISTERED_ADDRESS } from "../app/evaltree/_legal";
 
 const navItems = [
@@ -11,15 +12,25 @@ export default function Footer() {
   return (
     <footer className="border-t border-[#0F1C3F]/10 bg-white">
       <div className="w-full px-6 py-10">
-        {/* ✅ 4-column layout */}
+        {/* 4-column layout */}
         <div className="grid gap-8 text-center md:grid-cols-4 md:text-left">
           {/* 1) Brand */}
           <div className="md:justify-self-center">
             <div className="flex items-center justify-center gap-3 md:justify-start">
-              <div className="h-10 w-10 rounded-2xl bg-[#0F1C3F]" />
-              <div>
-                <div className="font-semibold">Evaltree Insights by Crowbar</div>
-                <div className="text-sm opacity-70">Crowbar Ltd</div>
+              {/* Logo (width controlled) */}
+              <div className="relative h-10 w-[100px] max-w-[160px]">
+                <Image
+                  src="/crowbar-ventures.png"
+                  alt="Crowbar Ventures"
+                  fill
+                  className="object-contain"
+                  
+                />
+              </div>
+
+              <div className="text-left">
+                <div className="font-semibold">Evaltree Insights</div>
+                <div className="text-sm opacity-70">by Crowbar</div>
               </div>
             </div>
           </div>

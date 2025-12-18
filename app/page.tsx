@@ -20,11 +20,16 @@ export default function EvaltreeLanding() {
 
   const packEnabled = count >= 5;
 
+  // ✅ Purchased slugs for logged-in user (persistent recognition on landing)
+  const [purchasedSlugs, setPurchasedSlugs] = useState<string[]>([]);
+  const [purchasedLoading, setPurchasedLoading] = useState(false);
+
   // ✅ Preview modal state (ONLY affects preview section)
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewSlug, setPreviewSlug] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState<string>("");
 
+  // Load briefs + count
   useEffect(() => {
     (async () => {
       try {
@@ -42,17 +47,68 @@ export default function EvaltreeLanding() {
     })();
   }, []);
 
+  // ✅ Fetch purchased slugs for user email (landing has no session_id)
+  useEffect(() => {
+    if (!isLoggedIn || !user?.email) {
+      setPurchasedSlugs([]);
+      return;
+    }
+
+    (async () => {
+      setPurchasedLoading(true);
+      try {
+        const r = await fetch("/api/purchase/purchased-briefs-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: user.email }),
+        });
+
+        const d = await r.json().catch(() => ({}));
+        setPurchasedSlugs(d.slugs || []);
+      } catch {
+        setPurchasedSlugs([]);
+      } finally {
+        setPurchasedLoading(false);
+      }
+    })();
+  }, [isLoggedIn, user?.email]);
+
+  // ✅ Pricing section checkout (single/pack)
   async function startCheckout(plan: "single" | "pack") {
-    // 🔒 Hard block if not logged in
     if (!isLoggedIn) return;
 
     const r = await fetch("/api/stripe/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan }),
+      body: JSON.stringify({
+        plan,
+        email: user?.email, // ✅ pass login email to backend
+      }),
     });
 
-    const d = await r.json();
+    const d = await r.json().catch(() => ({}));
+    if (d.url) window.location.href = d.url;
+    else alert(d.error || "Checkout failed");
+  }
+
+  // ✅ Per-brief checkout (Single brief)
+  async function checkoutSelected(slug: string) {
+    if (!isLoggedIn) return;
+
+    // don’t allow checkout for already purchased brief
+    if (purchasedSlugs.includes(slug)) return;
+
+    const r = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        plan: "single",
+        briefSlug: slug,
+        email: user?.email, // ✅ pass login email to backend
+      }),
+    });
+
+    const d = await r.json().catch(() => ({}));
     if (d.url) window.location.href = d.url;
     else alert(d.error || "Checkout failed");
   }
@@ -87,7 +143,6 @@ export default function EvaltreeLanding() {
             Understand anything in 5 minutes.
           </p>
 
-          {/* ✅ Optional: show login prompt in hero if not logged in */}
           {!loading && !isLoggedIn && (
             <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
               <div className="text-sm font-semibold">Login required</div>
@@ -106,7 +161,8 @@ export default function EvaltreeLanding() {
           {/* CTA Buttons */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button
-              onClick={() => startCheckout("single")}
+            onClick={() => { document.getElementById("previews")?.scrollIntoView({ behavior: "smooth" });}}
+              // onClick={() => startCheckout("single")}
               disabled={!isLoggedIn}
               className={[
                 "inline-flex items-center justify-center rounded-xl px-6 py-3 font-semibold shadow-sm transition-transform transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]",
@@ -132,7 +188,6 @@ export default function EvaltreeLanding() {
             </button>
           </div>
 
-          {/* ✅ VAT note (Hero / Buy buttons area) */}
           <p className="mt-3 text-xs opacity-70">
             Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
           </p>
@@ -151,7 +206,7 @@ export default function EvaltreeLanding() {
         </div>
       </section>
 
-      {/* About (public) */}
+      {/* About */}
       <section id="about" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
         <div className="grid gap-6 rounded-3xl bg-white p-8 shadow-sm md:grid-cols-3 md:p-10">
           <div className="md:col-span-1">
@@ -168,43 +223,76 @@ export default function EvaltreeLanding() {
         </div>
       </section>
 
-      {/* ✅ Preview (public) — UPDATED ONLY HERE */}
+      {/* Preview */}
       <section id="previews" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
         <div className="flex items-end justify-between gap-4">
-          <h2 className="text-xl font-semibold">Preview Briefs</h2>
-          <p className="hidden text-sm opacity-70 md:block">Free previews.</p>
+          <h2 className="text-xl font-semibold">Choose Your Briefs</h2>
+          <p className="hidden text-sm opacity-70 md:block">Preview and purchase individual research briefs.</p>
         </div>
 
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {briefs.map((p) => (
-            <div
-              key={p.id}
-              className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-[#F5F6F8]" />
-                <span className="rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
-                  Preview
-                </span>
-              </div>
+          {briefs.map((p) => {
+            const alreadyPurchased =
+              isLoggedIn && !purchasedLoading && purchasedSlugs.includes(p.slug);
 
-              <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm opacity-75">
-                View a short preview. Full PDF opens only after purchase.
-              </p>
-
-              <button
-                onClick={() => openPreview(p.slug, p.title)}
-                className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
+            return (
+              <div
+                key={p.id}
+                className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
               >
-                View Preview
-              </button>
-            </div>
-          ))}
+                <div className="flex items-start justify-between gap-3">
+                  <div className="h-10 w-10 rounded-2xl bg-[#F5F6F8]" />
+                  <span className="rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
+                    Preview
+                  </span>
+                </div>
+
+                <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
+                <p className="mt-2 text-sm opacity-75">
+                  View a short preview. Full PDF opens only after purchase.
+                </p>
+
+                <button
+                  onClick={() => openPreview(p.slug, p.title)}
+                  className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
+                >
+                  View Preview
+                </button>
+
+                {/* Buy per brief */}
+                <button
+                  onClick={() => checkoutSelected(p.slug)}
+                  disabled={!isLoggedIn || purchasedLoading || alreadyPurchased}
+                  className={[
+                    "mt-3 inline-flex w-full items-center justify-center rounded-xl px-4 py-2.5 font-semibold transition",
+                    !isLoggedIn
+                      ? "cursor-not-allowed bg-[#9aa0aa] text-white/90"
+                      : purchasedLoading
+                      ? "cursor-wait bg-[#0F1C3F]/50 text-white"
+                      : alreadyPurchased
+                      ? "cursor-not-allowed bg-[#0F1C3F]/70 text-white"
+                      : "bg-[#0F1C3F] text-white hover:opacity-95",
+                  ].join(" ")}
+                >
+                  {purchasedLoading
+                    ? "Checking purchase…"
+                    : alreadyPurchased
+                    ? "Already purchased"
+                    : "Buy this brief – $2.99"}
+                </button>
+
+                {alreadyPurchased && (
+                  <p className="mt-2 text-xs opacity-70">
+                    Already purchased by you. You can re-download from your purchase link / downloads page.
+                  </p>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* ✅ Preview Modal */}
+      {/* Preview Modal */}
       {previewOpen && previewSlug && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
@@ -231,14 +319,11 @@ export default function EvaltreeLanding() {
                 className="h-[75vh] w-full"
                 title="Preview PDF"
               />
-
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-white via-white/90 to-transparent" />
-
               <div className="absolute inset-x-0 bottom-4 flex flex-col items-center gap-2 px-4">
                 <div className="rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
                   Preview ends here
                 </div>
-
                 <Link
                   href="/#pricing"
                   onClick={closePreview}
@@ -252,7 +337,7 @@ export default function EvaltreeLanding() {
         </div>
       )}
 
-      {/* 🔒 Pricing section locked overlay */}
+      {/* Pricing */}
       <section id="pricing" className="mx-auto max-w-6xl px-6 pb-12 scroll-mt-24">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Pricing</h2>
@@ -264,7 +349,6 @@ export default function EvaltreeLanding() {
         </div>
 
         <div className="relative">
-          {/* Actual pricing UI (unchanged) */}
           <div className={isLoggedIn ? "" : "pointer-events-none select-none blur-[2px] opacity-70"}>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-3xl bg-white p-7 shadow-sm">
@@ -272,14 +356,13 @@ export default function EvaltreeLanding() {
                 <div className="mt-2 text-2xl font-semibold">Single Brief</div>
                 <div className="mt-2 text-3xl font-semibold">$2.99 USD</div>
 
-                <button
-                  onClick={() => startCheckout("single")}
+                  <button
+                  onClick={() => {document.getElementById("previews")?.scrollIntoView({ behavior: "smooth" });}}
                   className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
                 >
                   Buy Single Brief – $2.99 USD
                 </button>
 
-                {/* ✅ VAT note under price (Pricing card) */}
                 <p className="mt-2 text-xs opacity-70">
                   Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
                 </p>
@@ -307,7 +390,6 @@ export default function EvaltreeLanding() {
                   Buy Five Briefs – $8.99 USD
                 </button>
 
-                {/* ✅ VAT note under price (Pricing card) */}
                 <p className="mt-2 text-xs opacity-70">
                   Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
                 </p>
@@ -345,7 +427,6 @@ export default function EvaltreeLanding() {
               <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
                 <div className="text-sm font-semibold">Payments & delivery</div>
 
-                {/* ✅ VAT note near final decision before payment */}
                 <p className="mt-2 text-xs opacity-70">
                   Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
                 </p>
@@ -359,7 +440,6 @@ export default function EvaltreeLanding() {
             </div>
           </div>
 
-          {/* Overlay CTA when logged out */}
           {!loading && !isLoggedIn && (
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="mx-auto max-w-md rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 text-center shadow-sm">

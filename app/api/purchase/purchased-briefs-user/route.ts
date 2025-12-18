@@ -4,28 +4,14 @@ import { supabaseAdmin } from "@/lib/supabaseAdmin";
 export const runtime = "nodejs";
 
 export async function POST(req: Request) {
-  const { sessionId } = (await req.json()) as { sessionId: string };
+  const { email } = (await req.json()) as { email: string };
 
-  if (!sessionId) {
-    return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
+  const userEmail = String(email || "").trim().toLowerCase();
+  if (!userEmail) {
+    return NextResponse.json({ error: "Missing email" }, { status: 400 });
   }
 
-  // 1) Find email for this session
-  const { data: purchase, error: pErr } = await supabaseAdmin
-    .from("purchases")
-    .select("customer_email,status")
-    .eq("stripe_session_id", sessionId)
-    .maybeSingle();
-
-  if (pErr) return NextResponse.json({ error: pErr.message }, { status: 500 });
-  if (!purchase?.customer_email) {
-    return NextResponse.json({ error: "Purchase not found" }, { status: 404 });
-  }
-
-  const email = purchase.customer_email.trim().toLowerCase();
-
-  // 2) Get all purchased brief slugs for this email (across sessions)
-  // NOTE: join output can be object OR array depending on schema/relations
+  // Pull all brief slugs the user has already downloaded (across all paid purchases)
   const { data, error } = await supabaseAdmin
     .from("purchase_downloads")
     .select("briefs!inner(slug), purchases!inner(customer_email,status)")
@@ -40,7 +26,7 @@ export async function POST(req: Request) {
           const rowEmail = String(row?.purchases?.customer_email || "")
             .trim()
             .toLowerCase();
-          return rowEmail === email;
+          return rowEmail === userEmail;
         })
         .flatMap((row: any) => {
           const briefs = row?.briefs;

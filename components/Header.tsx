@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
@@ -47,13 +48,24 @@ export default function Header() {
     >
       <div className="flex w-full items-center justify-between gap-4 px-6 py-4 md:px-16">
         {/* Brand */}
-        <a href="#top" className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-xl bg-[#0F1C3F]" />
-          <div className="leading-tight">
-            <div className="text-sm font-semibold tracking-tight md:text-base">
+        <a href="#top" className="flex items-center gap-3 min-w-0">
+          {/* ✅ Logo (width controlled) */}
+          <div className="relative h-9 w-[100px] max-w-[140px] sm:w-[100px] sm:max-w-[100px]">
+            <Image
+              src="/crowbar-ventures.png"
+              alt="Crowbar Ventures"
+              fill
+              priority
+              className="object-contain"
+              sizes="(max-width: 640px) 140px, 160px"
+            />
+          </div>
+
+          <div className="leading-tight min-w-0">
+            <div className="text-sm font-semibold tracking-tight md:text-base truncate">
               Evaltree Insights
             </div>
-            <div className="text-xs opacity-70">by Crowbar</div>
+            <div className="text-xs opacity-70 truncate">by Crowbar</div>
           </div>
         </a>
 
@@ -102,7 +114,6 @@ export default function Header() {
             onClick={() => setMobileOpen((v) => !v)}
             className="inline-flex items-center justify-center rounded-xl border border-[#0F1C3F]/10 bg-white p-2 md:hidden"
           >
-            {/* Hamburger / Close icon */}
             <svg
               width="22"
               height="22"
@@ -134,7 +145,9 @@ export default function Header() {
       {/* ✅ Mobile Menu Panel (overlay; does NOT push content) */}
       <div
         className={`md:hidden absolute left-0 right-0 top-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${
-          mobileOpen ? "max-h-96 opacity-100 pointer-events-auto" : "max-h-0 opacity-0 pointer-events-none"
+          mobileOpen
+            ? "max-h-96 opacity-100 pointer-events-auto"
+            : "max-h-0 opacity-0 pointer-events-none"
         }`}
       >
         <div className="px-6 pb-4">
