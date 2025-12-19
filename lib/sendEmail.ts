@@ -19,16 +19,15 @@ export async function sendEvaltreeThankYouEmail(opts: {
     throw new Error("Missing slug for single purchase email link");
   }
 
-  // ✅ TS FIX: after the guard, slug is guaranteed for "single" at runtime,
-  // but TypeScript still sees slug as string | undefined. So we narrow it.
-  const slugSafe = (plan === "single" ? (slug as string) : undefined);
+  // ✅ TS FIX: make a definite string for the single branch
+  const slugForSingle: string = plan === "single" ? (slug as string) : "";
 
   // ✅ UPDATED: session_id + slug for single, only session_id for pack
   const downloadUrl =
     plan === "single"
       ? `${baseUrl}/evaltree/thank-you?session_id=${encodeURIComponent(
           sessionId
-        )}&slug=${encodeURIComponent(slugSafe)}`
+        )}&slug=${encodeURIComponent(slugForSingle)}`
       : `${baseUrl}/evaltree/thank-you?session_id=${encodeURIComponent(
           sessionId
         )}`;
