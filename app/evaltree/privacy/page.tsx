@@ -1,7 +1,3 @@
-// app/evaltree/privacy/page.tsx
-
-import { CROWBAR_REGISTERED_ADDRESS } from "../_legal";
-
 export const metadata = {
   title: "Privacy Policy — Evaltree Insights by Crowbar",
   description:

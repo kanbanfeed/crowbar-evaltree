@@ -38,7 +38,7 @@ export async function POST(req: Request) {
   if (bErr) return NextResponse.json({ error: bErr.message }, { status: 500 });
   if (!brief) return NextResponse.json({ error: "Brief not found" }, { status: 404 });
 
-  // 3) ✅ Persistent purchase recognition: prevent repurchase if already active (not expired)
+  // 3) Persistent purchase recognition: prevent repurchase if already active (not expired)
   if (purchase.customer_email) {
     const { data: accessRow, error: aErr } = await supabaseAdmin
       .from("user_brief_access")
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
 
     // If already purchased and access still valid → block
         if (isActive && notExpired) {
-      // ✅ Already purchased → allow re-download (no repurchase)
+      // Already purchased → allow re-download (no repurchase)
       return NextResponse.json({
         url: `/api/paid-download?session_id=${encodeURIComponent(sessionId)}&slug=${encodeURIComponent(briefSlug)}`,
         alreadyPurchased: true,
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
     if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 });
   }
 
-  // 5) ✅ Save persistent access record (so refresh/logout/revisit remembers)
+  // 5) Save persistent access record (so refresh/logout/revisit remembers)
   if (purchase.customer_email) {
     const { data: existingAccess } = await supabaseAdmin
       .from("user_brief_access")

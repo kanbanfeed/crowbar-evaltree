@@ -9,7 +9,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 
 const roboto = Roboto({
   subsets: ["latin"],
-  weight: ["400", "500", "700"], // pick weights you actually use
+  weight: ["400", "500", "700"], 
 });
 export const metadata: Metadata = {
   title: "Evaltree Insights by Crowbar — 5-Minute Expert Briefs",

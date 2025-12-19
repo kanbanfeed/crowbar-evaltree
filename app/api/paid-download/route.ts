@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     const sessionId = searchParams.get("session_id");
     const slug = searchParams.get("slug");
 
-    console.log("▶ paid-download session_id:", sessionId, "slug:", slug);
+    console.log("paid-download session_id:", sessionId, "slug:", slug);
 
     if (!sessionId || !slug) {
       return NextResponse.json({ error: "Missing session_id or slug" }, { status: 400 });
@@ -33,7 +33,7 @@ export async function GET(req: Request) {
       .eq("stripe_session_id", sessionId)
       .maybeSingle();
 
-    console.log("▶ purchase:", purchase, "pErr:", pErr);
+    console.log("purchase:", purchase, "pErr:", pErr);
 
     if (pErr) throw pErr;
 
@@ -49,7 +49,7 @@ export async function GET(req: Request) {
       .eq("is_active", true)
       .maybeSingle();
 
-    console.log("▶ brief:", brief, "bErr:", bErr);
+    console.log("brief:", brief, "bErr:", bErr);
 
     if (bErr) throw bErr;
     if (!brief) {
@@ -64,7 +64,7 @@ export async function GET(req: Request) {
       .eq("brief_id", brief.id)
       .maybeSingle();
 
-    console.log("▶ existing download:", existing, "eErr:", eErr);
+    console.log("existing download:", existing, "eErr:", eErr);
 
     if (eErr) throw eErr;
 
@@ -78,7 +78,7 @@ export async function GET(req: Request) {
         brief_id: brief.id,
       });
 
-      console.log("▶ insert download err:", insErr);
+      console.log("insert download err:", insErr);
       if (insErr) throw insErr;
 
       const { error: updErr } = await supabaseAdmin
@@ -86,19 +86,19 @@ export async function GET(req: Request) {
         .update({ downloads_remaining: purchase.downloads_remaining - 1 })
         .eq("id", purchase.id);
 
-      console.log("▶ update remaining err:", updErr);
+      console.log("update remaining err:", updErr);
       if (updErr) throw updErr;
     }
 
     // 4) Fetch the PDF and force download
     const paidUrl = toAbsolute(brief.paid_url);
-    console.log("▶ fetching paid URL:", paidUrl);
+    console.log("fetching paid URL:", paidUrl);
 
     const fileResp = await fetch(paidUrl);
 
     if (!fileResp.ok) {
       const body = await fileResp.text().catch(() => "");
-      console.error("❌ paid file fetch failed:", fileResp.status, body);
+      console.error("paid file fetch failed:", fileResp.status, body);
       return NextResponse.json(
         { error: "File not reachable", status: fileResp.status },
         { status: 502 }
@@ -116,7 +116,7 @@ export async function GET(req: Request) {
       },
     });
   } catch (err: any) {
-    console.error("❌ paid-download error:", err);
+    console.error("paid-download error:", err);
     return NextResponse.json(
       { error: "Internal server error", detail: err?.message || String(err) },
       { status: 500 }

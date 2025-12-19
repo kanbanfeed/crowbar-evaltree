@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 
 const KEY = "evaltree_cookie_consent_v1";
 
-// Toggle this depending on whether you have analytics/tracking enabled.
-// If you use Vercel Analytics / Google Analytics / any tracking -> keep true.
 const ANALYTICS_ENABLED = true;
 
 export default function CookieBanner() {

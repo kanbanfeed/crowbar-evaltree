@@ -201,7 +201,7 @@ export default function DownloadPackClient() {
     }
 
     if (d?.url) {
-      window.location.href = d.url; // ✅ /api/paid-download... forces attachment
+      window.location.href = d.url; //  /api/paid-download... forces attachment
       return;
     }
 

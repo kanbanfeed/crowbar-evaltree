@@ -54,9 +54,7 @@ export default function LibraryClient() {
   }, [isLoggedIn, user?.email]);
 
   async function download(slug: string) {
-    // If your download route is GET with session_id+slug, your library should
-    // use the SAME purchase verification logic.
-    // Best: create a user-email based download endpoint, but for now:
+  
     window.location.href = `/api/download?slug=${encodeURIComponent(slug)}`;
   }
 

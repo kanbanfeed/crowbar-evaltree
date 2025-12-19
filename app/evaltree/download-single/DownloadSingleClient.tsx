@@ -199,7 +199,7 @@ export default function DownloadSingleClient() {
     return;
   }
 
-  // ✅ If already purchased, still allow re-download (no payment again)
+  //  If already purchased, still allow re-download (no payment again)
   if (d?.alreadyPurchased) {
     showModal({
       title: "Already purchased",
@@ -296,7 +296,7 @@ export default function DownloadSingleClient() {
           {!loading && (
   <ul className="mt-6 space-y-3">
     {briefs.map((p) => {
-      const alreadyPurchased = purchasedSlugs.includes(p.slug); // ✅ define here
+      const alreadyPurchased = purchasedSlugs.includes(p.slug); //  define here
 
       return (
         <li

@@ -1,16 +1,36 @@
+// lib/sendEmail.ts (or lib/sendmail.ts – keep your filename/import consistent)
+
 type Plan = "single" | "pack";
 
 export async function sendEvaltreeThankYouEmail(opts: {
   to: string;
   plan: Plan;
   sessionId: string;
+  slug?: string; // ✅ NEW: required for single purchase link
 }) {
-  const { to, plan, sessionId } = opts;
+  const { to, plan, sessionId, slug } = opts;
 
+  // ✅ Use your real site url (better: move to env NEXT_PUBLIC_SITE_URL)
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.SITE_URL ||
+    "https://www.evaltree.com";
+
+  // ✅ Guard: single must include slug (KEEP)
+  if (plan === "single" && !slug) {
+    throw new Error("Missing slug for single purchase email link");
+  }
+
+  // ✅ UPDATED: session_id + slug for single, only session_id for pack
+  // (No functionality removed — we just avoid encoding an empty slug)
   const downloadUrl =
-    plan === "pack"
-      ? `http://localhost:3000/evaltree/thank-you?session_id=${encodeURIComponent(sessionId)}`
-      : `https://www.evaltree.com/evaltree/download-single?session_id=${encodeURIComponent(sessionId)}`;
+    plan === "single"
+      ? `${baseUrl}/evaltree/thank-you?session_id=${encodeURIComponent(
+          sessionId
+        )}&slug=${encodeURIComponent(slug)}`
+      : `${baseUrl}/evaltree/thank-you?session_id=${encodeURIComponent(
+          sessionId
+        )}`;
 
   const apiKey = process.env.BREVO_API_KEY;
   const senderName = process.env.BREVO_SENDER_NAME;
@@ -82,9 +102,11 @@ export async function sendEvaltreeThankYouEmail(opts: {
                     </div>
                     <ul style="margin:0;padding-left:18px;font-size:13px;color:#0F1C3F;opacity:0.9;">
                       <li>
-                        ${plan === "pack"
-                          ? "Download up to 5 briefs from the current list (as more briefs are published, you’ll have access based on your purchase)."
-                          : "Select any one brief from the list to download. Once selected, your one-download access is consumed."}
+                        ${
+                          plan === "pack"
+                            ? "Download up to 5 briefs from the current list (as more briefs are published, you’ll have access based on your purchase)."
+                            : "Select any one brief from the list to download. Once selected, your one-download access is consumed."
+                        }
                       </li>
                       <li>Save the download page link below for future access.</li>
                       <li>If you face any issue, contact support and we’ll help quickly.</li>
@@ -149,7 +171,6 @@ export async function sendEvaltreeThankYouEmail(opts: {
     </table>
   </div>
 `,
-
     }),
   });
 

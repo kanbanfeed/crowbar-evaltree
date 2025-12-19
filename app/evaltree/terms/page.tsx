@@ -1,5 +1,3 @@
-// app/evaltree/terms/page.tsx
-
 import { CROWBAR_REGISTERED_ADDRESS } from "../_legal";
 
 export const metadata = {

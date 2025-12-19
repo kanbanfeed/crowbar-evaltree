@@ -22,7 +22,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing slug or email" }, { status: 400 });
   }
 
-  // ensure brief exists
   const { data: brief, error: bErr } = await supabaseAdmin
     .from("briefs")
     .select("id,title,paid_url,is_active")
@@ -33,7 +32,6 @@ export async function GET(req: Request) {
   if (bErr) return NextResponse.json({ error: bErr.message }, { status: 500 });
   if (!brief) return NextResponse.json({ error: "Brief not found" }, { status: 404 });
 
-  // verify ownership by email (paid purchases only)
   const { data: owned, error: oErr } = await supabaseAdmin
     .from("purchase_downloads")
     .select("id, purchases!inner(customer_email,status)")

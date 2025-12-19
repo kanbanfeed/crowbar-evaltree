@@ -11,7 +11,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Missing email" }, { status: 400 });
   }
 
-  // Pull all brief slugs the user has already downloaded (across all paid purchases)
   const { data, error } = await supabaseAdmin
     .from("purchase_downloads")
     .select("briefs!inner(slug), purchases!inner(customer_email,status)")

@@ -21,20 +21,20 @@ export async function GET(req: Request) {
       .eq("is_active", true)
       .maybeSingle();
 
-    console.log("▶ brief:", brief, "error:", error);
+    console.log("brief:", brief, "error:", error);
 
     if (error) throw error;
     if (!brief) {
       return NextResponse.json({ error: "Brief not found" }, { status: 404 });
     }
 
-    // 🚨 IMPORTANT FIX (see below)
+    
     const previewUrl =
       brief.preview_url.startsWith("http")
         ? brief.preview_url
         : `${process.env.NEXT_PUBLIC_SITE_URL}${brief.preview_url}`;
 
-    console.log("▶ fetching preview URL:", previewUrl);
+    console.log("fetching preview URL:", previewUrl);
 
     const fileResp = await fetch(previewUrl);
     if (!fileResp.ok) {
@@ -52,7 +52,7 @@ export async function GET(req: Request) {
       },
     });
   } catch (err: any) {
-    console.error("❌ preview-download error:", err);
+    console.error("preview-download error:", err);
     return NextResponse.json(
       { error: "Internal server error", detail: err.message },
       { status: 500 }

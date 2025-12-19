@@ -19,7 +19,7 @@ async function makePreview(inputPath, outputPath, maxPages = 3) {
   const outBytes = await out.save();
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   fs.writeFileSync(outputPath, outBytes);
-  console.log("✅ Preview created:", outputPath);
+  console.log(" Preview created:", outputPath);
 }
 
 const paidDir = path.join(process.cwd(), "public/evaltree/paid");
@@ -30,6 +30,5 @@ const files = fs.readdirSync(paidDir).filter((f) => f.endsWith(".pdf"));
 for (const f of files) {
   const inFile = path.join(paidDir, f);
   const outFile = path.join(previewDir, f.replace(".pdf", "-preview.pdf"));
-  // first 3 pages preview
   await makePreview(inFile, outFile, 3);
 }

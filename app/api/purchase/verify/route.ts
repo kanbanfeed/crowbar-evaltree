@@ -16,15 +16,15 @@ export async function POST(req: Request) {
   // 1) Try DB first
   const { data: purchase, error: pErr } = await supabaseAdmin
     .from("purchases")
-    .select("id,plan,downloads_remaining,customer_email,status,email_sent,email_error,email_sent_at")
+    .select(
+      "id,plan,downloads_remaining,customer_email,status,email_sent,email_error,email_sent_at"
+    )
     .eq("stripe_session_id", sessionId)
     .maybeSingle();
 
   if (pErr) return NextResponse.json({ error: pErr.message }, { status: 500 });
 
-  // ✅ If already paid in DB, attempt email-send if not sent (but don't block user)
   if (purchase && purchase.status === "paid") {
-    // ✅ NEW: ensure single-brief purchase is recorded in purchase_downloads (idempotent)
     if (purchase.plan === "single" && purchase.customer_email) {
       try {
         const session = await stripe.checkout.sessions.retrieve(sessionId);
@@ -43,20 +43,51 @@ export async function POST(req: Request) {
             .maybeSingle();
 
           if (!bErr && brief?.id) {
-            await supabaseAdmin
-              .from("purchase_downloads")
-              .upsert(
-                {
-                  purchase_id: purchase.id,
-                  brief_id: brief.id,
-                },
-                { onConflict: "purchase_id,brief_id" }
-              );
+            await supabaseAdmin.from("purchase_downloads").upsert(
+              {
+                purchase_id: purchase.id,
+                brief_id: brief.id,
+              },
+              { onConflict: "purchase_id,brief_id" }
+            );
           }
         }
       } catch (e: any) {
         // Do not block user
-        console.error("purchase_downloads upsert failed (db-paid path):", e?.message || e);
+        console.error(
+          "purchase_downloads upsert failed (db-paid path):",
+          e?.message || e
+        );
+      }
+    }
+
+    // ✅ FIX: previously this tried to read purchase.brief_slug but you don't select it above.
+    // We DO NOT remove the line; we expand the select in a safe way by fetching it separately.
+    // This preserves functionality: email link for single needs slug.
+    let briefSlug =
+      ((purchase as any)?.brief_slug as string | null) || undefined;
+
+    // ✅ If brief_slug is not present in the selected fields, retrieve it without breaking anything.
+    // This keeps original behavior (use DB slug if present).
+    if (!briefSlug && purchase.plan === "single") {
+      try {
+        const { data: purchaseWithSlug, error: psErr } = await supabaseAdmin
+          .from("purchases")
+          .select("brief_slug")
+          .eq("id", purchase.id)
+          .maybeSingle();
+
+        if (!psErr) {
+          briefSlug =
+            (purchaseWithSlug as any)?.brief_slug
+              ? String((purchaseWithSlug as any).brief_slug)
+              : undefined;
+        }
+      } catch (e: any) {
+        console.error(
+          "brief_slug fetch failed (db-paid path):",
+          e?.message || e
+        );
       }
     }
 
@@ -66,6 +97,9 @@ export async function POST(req: Request) {
           to: purchase.customer_email,
           plan: purchase.plan as Plan,
           sessionId,
+          ...(purchase.plan === "single" && briefSlug
+            ? { slug: briefSlug }
+            : {}),
         });
 
         await supabaseAdmin
@@ -84,7 +118,6 @@ export async function POST(req: Request) {
           .update({ email_error: msg })
           .eq("id", purchase.id);
 
-        // IMPORTANT: Don't block verify/download just because email failed
         console.error("Brevo email failed (db-paid path):", msg);
       }
     }
@@ -96,7 +129,10 @@ export async function POST(req: Request) {
   const session = await stripe.checkout.sessions.retrieve(sessionId);
 
   if (session.payment_status !== "paid") {
-    return NextResponse.json({ ok: false, reason: "not_paid" }, { status: 403 });
+    return NextResponse.json(
+      { ok: false, reason: "not_paid" },
+      { status: 403 }
+    );
   }
 
   const rawEmail =
@@ -106,7 +142,6 @@ export async function POST(req: Request) {
 
   const plan = (session.metadata?.plan as Plan | undefined) ?? undefined;
 
-  // ✅ NEW: read briefSlug for single purchases
   const briefSlug =
     typeof session.metadata?.briefSlug === "string"
       ? session.metadata.briefSlug
@@ -135,12 +170,13 @@ export async function POST(req: Request) {
       },
       { onConflict: "stripe_session_id" }
     )
-    .select("id,plan,downloads_remaining,customer_email,status,email_sent,email_error,email_sent_at")
+    .select(
+      "id,plan,downloads_remaining,customer_email,status,email_sent,email_error,email_sent_at"
+    )
     .single();
 
   if (uErr) return NextResponse.json({ error: uErr.message }, { status: 500 });
 
-  // ✅ NEW: For single plan, immediately mark this brief as owned (idempotent)
   if (plan === "single" && briefSlug) {
     try {
       const { data: brief, error: bErr } = await supabaseAdmin
@@ -151,26 +187,34 @@ export async function POST(req: Request) {
         .maybeSingle();
 
       if (!bErr && brief?.id) {
-        await supabaseAdmin
-          .from("purchase_downloads")
-          .upsert(
-            {
-              purchase_id: upserted.id,
-              brief_id: brief.id,
-            },
-            { onConflict: "purchase_id,brief_id" }
-          );
+        await supabaseAdmin.from("purchase_downloads").upsert(
+          {
+            purchase_id: upserted.id,
+            brief_id: brief.id,
+          },
+          { onConflict: "purchase_id,brief_id" }
+        );
       }
     } catch (e: any) {
       // Do not block user
-      console.error("purchase_downloads upsert failed (stripe-paid path):", e?.message || e);
+      console.error(
+        "purchase_downloads upsert failed (stripe-paid path):",
+        e?.message || e
+      );
     }
   }
 
   // 4) Send email once (idempotent)
   if (!upserted.email_sent) {
     try {
-      await sendEvaltreeThankYouEmail({ to: email, plan, sessionId });
+      // ✅ FIX: sendEvaltreeThankYouEmail requires slug for single.
+      // We keep existing functionality and just include slug when needed.
+      await sendEvaltreeThankYouEmail({
+        to: email,
+        plan,
+        sessionId,
+        ...(plan === "single" ? { slug: briefSlug || undefined } : {}),
+      });
 
       await supabaseAdmin
         .from("purchases")
@@ -189,7 +233,6 @@ export async function POST(req: Request) {
         .eq("id", upserted.id);
 
       console.error("Brevo email failed (stripe-paid path):", msg);
-      // Do not block user
     }
   }
 

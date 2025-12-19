@@ -19,14 +19,14 @@ export default function Header() {
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // ✅ Used to detect outside tap
+  //  Used to detect outside tap
   const headerRef = useRef<HTMLElement | null>(null);
 
   function handleMobileNavClick() {
     setMobileOpen(false);
   }
 
-  // ✅ Close mobile menu when user taps/clicks outside the header/menu area
+  //  Close mobile menu when user taps/clicks outside the header/menu area
   useEffect(() => {
     if (!mobileOpen) return;
 
@@ -51,7 +51,7 @@ export default function Header() {
       <div className="flex w-full items-center justify-between gap-4 px-6 py-4 md:px-16">
         {/* Brand */}
         <a href="#top" className="flex items-center gap-3 min-w-0">
-          {/* ✅ Logo (width controlled) */}
+          {/*  Logo (width controlled) */}
           <div className="relative h-9 w-[100px] max-w-[140px] sm:w-[100px] sm:max-w-[100px]">
             <Image
               src="/crowbar-ventures.png"
@@ -144,7 +144,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* ✅ Mobile Menu Panel (overlay; does NOT push content) */}
+      {/*  Mobile Menu Panel (overlay; does NOT push content) */}
       <div
         className={`md:hidden absolute left-0 right-0 top-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out ${
           mobileOpen

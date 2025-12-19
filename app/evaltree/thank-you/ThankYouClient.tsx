@@ -11,7 +11,6 @@ type Purchase = {
   customer_email: string;
   status: "paid" | "refunded" | "canceled";
 };
-
 function Modal({
   open,
   title,

@@ -12,7 +12,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing email" }, { status: 400 });
     }
 
-    // All briefs this email has purchased (across all sessions), paid only
     const { data, error } = await supabaseAdmin
       .from("purchase_downloads")
       .select(
@@ -29,7 +28,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Deduplicate by brief slug (in case same brief appears multiple times)
     const map = new Map<string, any>();
     for (const row of data || []) {
       const b = (row as any)?.briefs;

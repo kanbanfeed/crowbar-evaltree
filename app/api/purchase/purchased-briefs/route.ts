@@ -24,8 +24,7 @@ export async function POST(req: Request) {
 
   const email = purchase.customer_email.trim().toLowerCase();
 
-  // 2) Get all purchased brief slugs for this email (across sessions)
-  // NOTE: join output can be object OR array depending on schema/relations
+ 
   const { data, error } = await supabaseAdmin
     .from("purchase_downloads")
     .select("briefs!inner(slug), purchases!inner(customer_email,status)")

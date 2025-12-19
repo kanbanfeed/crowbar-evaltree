@@ -20,11 +20,11 @@ export default function EvaltreeLanding() {
 
   const packEnabled = count >= 5;
 
-  // ✅ Purchased slugs for logged-in user (persistent recognition on landing)
+  //  Purchased slugs for logged-in user (persistent recognition on landing)
   const [purchasedSlugs, setPurchasedSlugs] = useState<string[]>([]);
   const [purchasedLoading, setPurchasedLoading] = useState(false);
 
-  // ✅ Preview modal state (ONLY affects preview section)
+  //  Preview modal state (ONLY affects preview section)
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewSlug, setPreviewSlug] = useState<string | null>(null);
   const [previewTitle, setPreviewTitle] = useState<string>("");
@@ -47,7 +47,7 @@ export default function EvaltreeLanding() {
     })();
   }, []);
 
-  // ✅ Fetch purchased slugs for user email (landing has no session_id)
+  //  Fetch purchased slugs for user email (landing has no session_id)
   useEffect(() => {
     if (!isLoggedIn || !user?.email) {
       setPurchasedSlugs([]);
@@ -73,7 +73,7 @@ export default function EvaltreeLanding() {
     })();
   }, [isLoggedIn, user?.email]);
 
-  // ✅ Pricing section checkout (single/pack)
+  //  Pricing section checkout (single/pack)
   async function startCheckout(plan: "single" | "pack") {
     if (!isLoggedIn) return;
 
@@ -82,7 +82,7 @@ export default function EvaltreeLanding() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         plan,
-        email: user?.email, // ✅ pass login email to backend
+        email: user?.email, //  pass login email to backend
       }),
     });
 
@@ -91,7 +91,7 @@ export default function EvaltreeLanding() {
     else alert(d.error || "Checkout failed");
   }
 
-  // ✅ Per-brief checkout (Single brief)
+  //  Per-brief checkout (Single brief)
   async function checkoutSelected(slug: string) {
     if (!isLoggedIn) return;
 
@@ -104,7 +104,7 @@ export default function EvaltreeLanding() {
       body: JSON.stringify({
         plan: "single",
         briefSlug: slug,
-        email: user?.email, // ✅ pass login email to backend
+        email: user?.email, //  pass login email to backend
       }),
     });
 

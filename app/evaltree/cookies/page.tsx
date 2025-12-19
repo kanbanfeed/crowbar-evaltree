@@ -1,5 +1,3 @@
-// app/evaltree/cookies/page.tsx
-
 export const metadata = {
   title: "Cookie Policy — Evaltree Insights by Crowbar",
   description:

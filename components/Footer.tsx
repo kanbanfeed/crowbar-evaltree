@@ -6,18 +6,20 @@ const navItems = [
   { label: "About", href: "/#about" },
   { label: "Previews", href: "/#previews" },
   { label: "Pricing", href: "/#pricing" },
+  { label: "Download", href: "/evaltree/library" },
+
 ];
 
 export default function Footer() {
   return (
     <footer className="border-t border-[#0F1C3F]/10 bg-white">
       <div className="w-full px-6 py-10">
-        {/* 4-column layout */}
+     
         <div className="grid gap-8 text-center md:grid-cols-4 md:text-left">
-          {/* 1) Brand */}
+       
           <div className="md:justify-self-center">
             <div className="flex items-center justify-center gap-3 md:justify-start">
-              {/* Logo (width controlled) */}
+        
               <div className="relative h-10 w-[100px] max-w-[160px]">
                 <Image
                   src="/crowbar-ventures.png"
@@ -100,7 +102,7 @@ export default function Footer() {
         <div className="mt-10 flex flex-col items-center gap-2 border-t border-[#0F1C3F]/10 pt-6 text-sm opacity-70 md:flex-row md:justify-between">
           <div>© Crowbar Ltd 2025. All rights reserved.</div>
 
-          {/* ✅ VAT line (site-wide footer disclosure) */}
+          {/*  VAT line (site-wide footer disclosure) */}
           <div className="text-xs opacity-70">
             Evaltree Insights by Crowbar Ltd – Prices exclude VAT. VAT is not currently charged.
           </div>

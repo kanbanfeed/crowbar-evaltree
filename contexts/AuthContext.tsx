@@ -19,10 +19,8 @@
 
     const signInWithCrowbar = () => {
       
-      // callback must exist in Evaltree
-      const callbackUrl = `${window.location.origin}/auth/callback`;
+       const callbackUrl = `${window.location.origin}/auth/callback`;
 
-      //  Crowbar expects returnAddress
       window.location.href = `https://www.crowbarltd.com/login?redirect_to=${encodeURIComponent(callbackUrl)}`;
     };
 
