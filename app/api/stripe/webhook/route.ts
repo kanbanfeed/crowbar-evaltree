@@ -164,8 +164,7 @@ export async function POST(req: Request) {
             ? session.metadata.briefSlug.trim()
             : undefined;
 
-        //     FIX (no functionality removed): if single and slug is missing,
-        // do not call email function that requires slug; store error instead.
+        
         if (plan === "single" && !briefSlugFromStripe) {
           const msg = "Missing slug for single purchase email link";
           console.error("Brevo email skipped:", msg);
@@ -213,14 +212,14 @@ export async function POST(req: Request) {
           })
           .eq("id", upserted.id);
 
-        // IMPORTANT: Still return success to Stripe
+   
       }
     }
 
     return NextResponse.json({ received: true });
   } catch (err: any) {
     console.error("Webhook handler crash:", err?.message || err);
-    // Still return 200 so Stripe doesn't keep retrying forever
+ 
     return NextResponse.json({ received: true });
   }
 }
