@@ -61,14 +61,11 @@ export async function POST(req: Request) {
       }
     }
 
-    // ✅ FIX: previously this tried to read purchase.brief_slug but you don't select it above.
-    // We DO NOT remove the line; we expand the select in a safe way by fetching it separately.
-    // This preserves functionality: email link for single needs slug.
+   
     let briefSlug =
       ((purchase as any)?.brief_slug as string | null) || undefined;
 
-    // ✅ If brief_slug is not present in the selected fields, retrieve it without breaking anything.
-    // This keeps original behavior (use DB slug if present).
+  
     if (!briefSlug && purchase.plan === "single") {
       try {
         const { data: purchaseWithSlug, error: psErr } = await supabaseAdmin
@@ -207,8 +204,7 @@ export async function POST(req: Request) {
   // 4) Send email once (idempotent)
   if (!upserted.email_sent) {
     try {
-      // ✅ FIX: sendEvaltreeThankYouEmail requires slug for single.
-      // We keep existing functionality and just include slug when needed.
+
       await sendEvaltreeThankYouEmail({
         to: email,
         plan,

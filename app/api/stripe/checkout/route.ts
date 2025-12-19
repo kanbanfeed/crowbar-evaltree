@@ -1,5 +1,3 @@
-// app/api/stripe/checkout/route.ts
-
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
@@ -96,8 +94,7 @@ export async function POST(req: Request) {
       success_url: successUrl,
       cancel_url: `${origin}/evaltree?canceled=1`,
 
-      // ✅ FIX (no functionality removed): ensure metadata always contains the correct slug for single,
-      // and does not accidentally store empty string for pack.
+     
       metadata: {
         plan,
         source: "evaltree",

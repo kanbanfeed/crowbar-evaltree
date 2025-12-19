@@ -1,4 +1,3 @@
-// app/api/stripe/webhook/route.ts
 
 import Stripe from "stripe";
 import { NextResponse } from "next/server";
@@ -17,9 +16,8 @@ const supabaseAdmin = createClient(
 );
 
 export async function POST(req: Request) {
-  // NOTE: In most Next versions headers() is sync. If your version truly needs async,
-  // you can switch back to: (await headers()).get(...)
-  const sig = headers().get("stripe-signature");
+  
+  const sig = (await headers()).get("stripe-signature");
 
   if (!sig) {
     return NextResponse.json(
@@ -155,22 +153,22 @@ export async function POST(req: Request) {
         return NextResponse.json({ received: true });
       }
 
-      // ✅ Send Brevo email (DO NOT crash webhook if it fails)
+      //     Send Brevo email (DO NOT crash webhook if it fails)
       try {
         const normalizedEmail = (email || "").trim().toLowerCase();
 
-        // ✅ get slug from Stripe metadata (set during checkout)
+        //     get slug from Stripe metadata (set during checkout)
         const briefSlugFromStripe =
           typeof session.metadata?.briefSlug === "string" &&
           session.metadata.briefSlug.trim()
             ? session.metadata.briefSlug.trim()
             : undefined;
 
-        // ✅ FIX (no functionality removed): if single and slug is missing,
+        //     FIX (no functionality removed): if single and slug is missing,
         // do not call email function that requires slug; store error instead.
         if (plan === "single" && !briefSlugFromStripe) {
           const msg = "Missing slug for single purchase email link";
-          console.error("❌ Brevo email skipped:", msg);
+          console.error("Brevo email skipped:", msg);
 
           await supabaseAdmin
             .from("purchases")
@@ -197,7 +195,7 @@ export async function POST(req: Request) {
             .eq("id", upserted.id);
 
           console.log(
-            "✅ Thank-you email sent:",
+            "    Thank-you email sent:",
             normalizedEmail,
             plan,
             sessionId
@@ -205,7 +203,7 @@ export async function POST(req: Request) {
         }
       } catch (e: any) {
         const msg = e?.message || String(e);
-        console.error("❌ Brevo email failed:", msg);
+        console.error(" Brevo email failed:", msg);
 
         await supabaseAdmin
           .from("purchases")

@@ -1,27 +1,25 @@
-// lib/sendEmail.ts (or lib/sendmail.ts – keep your filename/import consistent)
-
 type Plan = "single" | "pack";
 
 export async function sendEvaltreeThankYouEmail(opts: {
   to: string;
   plan: Plan;
   sessionId: string;
-  slug?: string; // ✅ NEW: required for single purchase link
+  slug?: string; //     NEW: required for single purchase link
 }) {
   const { to, plan, sessionId, slug } = opts;
 
-  // ✅ Use your real site url (better: move to env NEXT_PUBLIC_SITE_URL)
+  //     Use your real site url (better: move to env NEXT_PUBLIC_SITE_URL)
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.SITE_URL ||
     "https://www.evaltree.com";
 
-  // ✅ Guard: single must include slug (KEEP)
+  //     Guard: single must include slug (KEEP)
   if (plan === "single" && !slug) {
     throw new Error("Missing slug for single purchase email link");
   }
 
-  // ✅ UPDATED: session_id + slug for single, only session_id for pack
+  //     UPDATED: session_id + slug for single, only session_id for pack
   // (No functionality removed — we just avoid encoding an empty slug)
   const downloadUrl =
     plan === "single"
@@ -83,7 +81,7 @@ export async function sendEvaltreeThankYouEmail(opts: {
                   
                   <div style="display:inline-block;background:#F5F6F8;border-radius:999px;padding:8px 12px;
                               font-size:12px;font-weight:600;color:#0F1C3F;">
-                    ✅ Payment confirmed
+                        Payment confirmed
                   </div>
 
                   <h1 style="margin:14px 0 8px 0;font-size:22px;line-height:1.25;">
