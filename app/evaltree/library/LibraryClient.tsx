@@ -54,9 +54,44 @@ export default function LibraryClient() {
   }, [isLoggedIn, user?.email]);
 
   async function download(slug: string) {
-  
-    window.location.href = `/api/download?slug=${encodeURIComponent(slug)}`;
+  if (!user?.email) {
+    setErr("Please log in to download.");
+    return;
   }
+
+  try {
+    const r = await fetch("/api/library/download", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        slug,
+        email: user.email,
+      }),
+    });
+
+    if (!r.ok) {
+      const d = await r.json().catch(() => ({}));
+      setErr(d?.error || "Download failed");
+      return;
+    }
+
+    // ✅ This response is a PDF file (binary), so we must download it as blob
+    const blob = await r.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${slug}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+  } catch {
+    setErr("Download failed");
+  }
+}
+
 
   return (
     <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
