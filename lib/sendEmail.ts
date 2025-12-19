@@ -9,7 +9,7 @@ export async function sendEvaltreeThankYouEmail(opts: {
 
   const downloadUrl =
     plan === "pack"
-      ? `https://www.evaltree.com/evaltree/download-pack?session_id=${encodeURIComponent(sessionId)}`
+      ? `http://localhost:3000/evaltree/thank-you?session_id=${encodeURIComponent(sessionId)}`
       : `https://www.evaltree.com/evaltree/download-single?session_id=${encodeURIComponent(sessionId)}`;
 
   const apiKey = process.env.BREVO_API_KEY;
