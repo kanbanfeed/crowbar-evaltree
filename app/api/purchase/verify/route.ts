@@ -22,8 +22,44 @@ export async function POST(req: Request) {
 
   if (pErr) return NextResponse.json({ error: pErr.message }, { status: 500 });
 
-  // If already paid in DB, attempt email-send if not sent (but don't block user)
+  // ✅ If already paid in DB, attempt email-send if not sent (but don't block user)
   if (purchase && purchase.status === "paid") {
+    // ✅ NEW: ensure single-brief purchase is recorded in purchase_downloads (idempotent)
+    if (purchase.plan === "single" && purchase.customer_email) {
+      try {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+        const briefSlug =
+          typeof session.metadata?.briefSlug === "string"
+            ? session.metadata.briefSlug
+            : null;
+
+        if (briefSlug) {
+          const { data: brief, error: bErr } = await supabaseAdmin
+            .from("briefs")
+            .select("id")
+            .eq("slug", briefSlug)
+            .eq("is_active", true)
+            .maybeSingle();
+
+          if (!bErr && brief?.id) {
+            await supabaseAdmin
+              .from("purchase_downloads")
+              .upsert(
+                {
+                  purchase_id: purchase.id,
+                  brief_id: brief.id,
+                },
+                { onConflict: "purchase_id,brief_id" }
+              );
+          }
+        }
+      } catch (e: any) {
+        // Do not block user
+        console.error("purchase_downloads upsert failed (db-paid path):", e?.message || e);
+      }
+    }
+
     if (!purchase.email_sent && purchase.customer_email && purchase.plan) {
       try {
         await sendEvaltreeThankYouEmail({
@@ -63,8 +99,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, reason: "not_paid" }, { status: 403 });
   }
 
-  const email = session.customer_details?.email || session.customer_email || undefined;
+  const rawEmail =
+    session.customer_details?.email || session.customer_email || undefined;
+
+  const email = rawEmail ? rawEmail.trim().toLowerCase() : undefined;
+
   const plan = (session.metadata?.plan as Plan | undefined) ?? undefined;
+
+  // ✅ NEW: read briefSlug for single purchases
+  const briefSlug =
+    typeof session.metadata?.briefSlug === "string"
+      ? session.metadata.briefSlug
+      : "";
 
   if (!email || !plan) {
     return NextResponse.json(
@@ -93,6 +139,33 @@ export async function POST(req: Request) {
     .single();
 
   if (uErr) return NextResponse.json({ error: uErr.message }, { status: 500 });
+
+  // ✅ NEW: For single plan, immediately mark this brief as owned (idempotent)
+  if (plan === "single" && briefSlug) {
+    try {
+      const { data: brief, error: bErr } = await supabaseAdmin
+        .from("briefs")
+        .select("id")
+        .eq("slug", briefSlug)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (!bErr && brief?.id) {
+        await supabaseAdmin
+          .from("purchase_downloads")
+          .upsert(
+            {
+              purchase_id: upserted.id,
+              brief_id: brief.id,
+            },
+            { onConflict: "purchase_id,brief_id" }
+          );
+      }
+    } catch (e: any) {
+      // Do not block user
+      console.error("purchase_downloads upsert failed (stripe-paid path):", e?.message || e);
+    }
+  }
 
   // 4) Send email once (idempotent)
   if (!upserted.email_sent) {

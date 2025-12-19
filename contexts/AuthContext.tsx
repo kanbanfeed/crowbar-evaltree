@@ -1,67 +1,67 @@
-"use client";
+  "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { User } from "@supabase/supabase-js";
+  import { createContext, useContext, useEffect, useState } from "react";
+  import { supabase } from "@/lib/supabaseClient";
+  import { User } from "@supabase/supabase-js";
 
-type AuthCtx = {
-  user: User | null;
-  loading: boolean;
-  signInWithCrowbar: () => void;
-  signOutUser: () => Promise<void>;
-};
-
-const AuthContext = createContext<AuthCtx | null>(null);
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const signInWithCrowbar = () => {
-    
-    // callback must exist in Evaltree
-    const callbackUrl = `${window.location.origin}/auth/callback`;
-
-    //  Crowbar expects returnAddress
-    window.location.href = `https://www.crowbarltd.com/login?redirect_to=${encodeURIComponent(callbackUrl)}`;
+  type AuthCtx = {
+    user: User | null;
+    loading: boolean;
+    signInWithCrowbar: () => void;
+    signOutUser: () => Promise<void>;
   };
 
-  const signOutUser = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    
-  };
+  const AuthContext = createContext<AuthCtx | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
+  export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    (async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!mounted) return;
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    })();
+    const signInWithCrowbar = () => {
+      
+      // callback must exist in Evaltree
+      const callbackUrl = `${window.location.origin}/auth/callback`;
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => {
-      mounted = false;
-      sub.subscription.unsubscribe();
+      //  Crowbar expects returnAddress
+      window.location.href = `https://www.crowbarltd.com/login?redirect_to=${encodeURIComponent(callbackUrl)}`;
     };
-  }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, loading, signInWithCrowbar, signOutUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+    const signOutUser = async () => {
+      await supabase.auth.signOut();
+      setUser(null);
+      
+    };
 
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
-  return ctx;
-};
+    useEffect(() => {
+      let mounted = true;
+
+      (async () => {
+        const { data } = await supabase.auth.getSession();
+        if (!mounted) return;
+        setUser(data.session?.user ?? null);
+        setLoading(false);
+      })();
+
+      const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+        setLoading(false);
+      });
+
+      return () => {
+        mounted = false;
+        sub.subscription.unsubscribe();
+      };
+    }, []);
+
+    return (
+      <AuthContext.Provider value={{ user, loading, signInWithCrowbar, signOutUser }}>
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+
+  export const useAuth = () => {
+    const ctx = useContext(AuthContext);
+    if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+    return ctx;
+  };

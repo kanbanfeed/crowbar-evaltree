@@ -187,12 +187,7 @@ export async function POST(req: Request) {
       success_url: successUrl,
       cancel_url: `${origin}/evaltree?canceled=1`,
 
-      metadata: {
-        plan,
-        source: "evaltree",
-        email, // ✅ keep for webhook / debugging
-        ...(plan === "single" ? { briefSlug } : {}),
-      },
+     metadata: { plan, source: "evaltree", briefSlug }
     });
 
     return NextResponse.json({ url: session.url });

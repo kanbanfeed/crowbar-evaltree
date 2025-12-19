@@ -37,7 +37,10 @@ export async function POST(req: Request) {
       process.env.STRIPE_WEBHOOK_SECRET!
     );
   } catch (err: any) {
-    console.error("❌ Webhook signature verification failed:", err?.message || err);
+    console.error(
+      "❌ Webhook signature verification failed:",
+      err?.message || err
+    );
     return NextResponse.json(
       { error: `Webhook Error: ${err?.message || "Invalid signature"}` },
       { status: 400 }
@@ -50,12 +53,22 @@ export async function POST(req: Request) {
 
       const sessionId = session.id;
 
-      const email =
-        session.customer_details?.email ||
-        session.customer_email ||
-        null;
+      const rawEmail =
+        session.customer_details?.email || session.customer_email || null;
 
-      const plan = (session.metadata?.plan || null) as "single" | "pack" | null;
+      // ✅ Normalize email to match login email comparisons
+      const email = rawEmail ? rawEmail.trim().toLowerCase() : null;
+
+      const plan = (session.metadata?.plan || null) as
+        | "single"
+        | "pack"
+        | null;
+
+      // ✅ NEW: read chosen brief slug for single purchases
+      const briefSlug =
+        typeof session.metadata?.briefSlug === "string"
+          ? session.metadata.briefSlug
+          : "";
 
       // If metadata missing, don’t crash webhook
       if (!email || !plan) {
@@ -76,7 +89,7 @@ export async function POST(req: Request) {
         .upsert(
           {
             stripe_session_id: sessionId,
-            stripe_customer_id: session.customer as string,
+            stripe_customer_id: (session.customer as string) ?? null,
             customer_email: email,
             plan,
             downloads_remaining: downloadsRemaining,
@@ -97,6 +110,45 @@ export async function POST(req: Request) {
       if (!upserted) {
         console.warn("⚠️ Purchase upsert returned no row:", sessionId);
         return NextResponse.json({ received: true });
+      }
+
+      // ✅ NEW: for single plan, immediately record this brief in purchase_downloads
+      // This powers: landing "Already purchased" + future Library listing
+      if (plan === "single" && briefSlug) {
+        try {
+          const { data: brief, error: bErr } = await supabaseAdmin
+            .from("briefs")
+            .select("id")
+            .eq("slug", briefSlug)
+            .eq("is_active", true)
+            .maybeSingle();
+
+          if (bErr) {
+            console.error("❌ briefs lookup error:", bErr.message);
+          } else if (brief?.id) {
+            const { error: pdErr } = await supabaseAdmin
+              .from("purchase_downloads")
+              .upsert(
+                {
+                  purchase_id: upserted.id,
+                  brief_id: brief.id,
+                },
+                { onConflict: "purchase_id,brief_id" }
+              );
+
+            if (pdErr) {
+              console.error("❌ purchase_downloads upsert error:", pdErr.message);
+            }
+          } else {
+            console.warn("⚠️ Brief not found for slug:", briefSlug);
+          }
+        } catch (e: any) {
+          console.error(
+            "❌ purchase_downloads insert crash:",
+            e?.message || e
+          );
+          // Do not block webhook
+        }
       }
 
       if (upserted.email_sent) {
