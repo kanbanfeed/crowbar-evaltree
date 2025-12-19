@@ -4,28 +4,31 @@ export async function sendEvaltreeThankYouEmail(opts: {
   to: string;
   plan: Plan;
   sessionId: string;
-  slug?: string; //     NEW: required for single purchase link
+  slug?: string; // ✅ NEW: required for single purchase link
 }) {
   const { to, plan, sessionId, slug } = opts;
 
-  //     Use your real site url (better: move to env NEXT_PUBLIC_SITE_URL)
+  // ✅ Use your real site url (better: move to env NEXT_PUBLIC_SITE_URL)
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.SITE_URL ||
     "https://www.evaltree.com";
 
-  //     Guard: single must include slug (KEEP)
+  // ✅ Guard: single must include slug (KEEP)
   if (plan === "single" && !slug) {
     throw new Error("Missing slug for single purchase email link");
   }
 
-  //     UPDATED: session_id + slug for single, only session_id for pack
-  // (No functionality removed — we just avoid encoding an empty slug)
+  // ✅ TS FIX: after the guard, slug is guaranteed for "single" at runtime,
+  // but TypeScript still sees slug as string | undefined. So we narrow it.
+  const slugSafe = (plan === "single" ? (slug as string) : undefined);
+
+  // ✅ UPDATED: session_id + slug for single, only session_id for pack
   const downloadUrl =
     plan === "single"
       ? `${baseUrl}/evaltree/thank-you?session_id=${encodeURIComponent(
           sessionId
-        )}&slug=${encodeURIComponent(slug)}`
+        )}&slug=${encodeURIComponent(slugSafe)}`
       : `${baseUrl}/evaltree/thank-you?session_id=${encodeURIComponent(
           sessionId
         )}`;
