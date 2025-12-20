@@ -249,7 +249,7 @@ export default function EvaltreeLanding() {
 
                 <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
                 <p className="mt-2 text-sm opacity-75">
-                  View a short preview. Full PDF opens only after purchase.
+                  Full PDF opens only after purchase.
                 </p>
 
                 {/* <button
