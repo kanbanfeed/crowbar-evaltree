@@ -252,12 +252,12 @@ export default function EvaltreeLanding() {
                   View a short preview. Full PDF opens only after purchase.
                 </p>
 
-                <button
+                {/* <button
                   onClick={() => openPreview(p.slug, p.title)}
                   className="mt-5 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-4 py-2.5 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
                 >
                   View Preview
-                </button>
+                </button> */}
 
                 {/* Buy per brief */}
                 <button
