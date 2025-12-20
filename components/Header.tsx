@@ -9,7 +9,7 @@ const navItems = [
   { label: "About", href: ".#about" },
   { label: "Previews", href: ".#previews" },
   { label: "Pricing", href: ".#pricing" },
-  { label: "Download", href: "/evaltree/library" },
+  // { label: "Download", href: "/evaltree/library" },
 
 ];
 
