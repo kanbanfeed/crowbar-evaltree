@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "https://crowbarltd.com/evaltree/:path*",
+      "permanent": true
+    }
+  ]
+}
