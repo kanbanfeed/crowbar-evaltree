@@ -4,7 +4,7 @@ const CROWBAR_ORIGIN =
   process.env.CROWBAR_ORIGIN || "https://crowbarltd.com";
 
 const nextConfig: NextConfig = {
-  reactCompiler: true,
+  reactCompiler: false,
 
   async redirects() {
     return [
