@@ -75,7 +75,7 @@ export default function LibraryClient() {
       return;
     }
 
-    // ✅ This response is a PDF file (binary), so we must download it as blob
+    //     This response is a PDF file (binary), so we must download it as blob
     const blob = await r.blob();
     const url = window.URL.createObjectURL(blob);
 

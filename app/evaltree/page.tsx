@@ -19,7 +19,7 @@ export default function EvaltreeLanding() {
   const [count, setCount] = useState<number>(0);
   const packEnabled = count >= 5;
 
-  // ✅ Guest checkout support (so login is NOT required)
+  //     Guest checkout support (so login is NOT required)
   const [guestEmail, setGuestEmail] = useState<string>("");
 
   const emailToUse = useMemo(() => {
@@ -56,7 +56,7 @@ export default function EvaltreeLanding() {
     })();
   }, []);
 
-  // ✅ Fetch purchased slugs using whichever email we have (login OR guest)
+  //     Fetch purchased slugs using whichever email we have (login OR guest)
   useEffect(() => {
     if (!emailToUse || !isValidEmail(emailToUse)) {
       setPurchasedSlugs([]);
@@ -91,7 +91,7 @@ export default function EvaltreeLanding() {
     return true;
   }
 
-  // ✅ Pricing checkout (single/pack) — NO LOGIN REQUIRED
+  //     Pricing checkout (single/pack) — NO LOGIN REQUIRED
   async function startCheckout(plan: "single" | "pack") {
     if (!requireEmailOrStop()) return;
 
@@ -109,7 +109,7 @@ export default function EvaltreeLanding() {
     else alert(d.error || "Checkout failed");
   }
 
-  // ✅ Per-brief checkout — NO LOGIN REQUIRED
+  //     Per-brief checkout — NO LOGIN REQUIRED
   async function checkoutSelected(slug: string) {
     if (!requireEmailOrStop()) return;
 
@@ -161,7 +161,7 @@ export default function EvaltreeLanding() {
             Understand anything in 5 minutes.
           </p>
 
-          {/* ✅ Optional login (NOT required) */}
+          {/*     Optional login (NOT required) */}
           {!loading && !isLoggedIn && (
             <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
               <div className="text-sm font-semibold">Optional: Sign in</div>
@@ -177,7 +177,7 @@ export default function EvaltreeLanding() {
             </div>
           )}
 
-          {/* ✅ Guest email for checkout */}
+          {/*     Guest email for checkout */}
           {!isLoggedIn && (
             <div id="checkout-email" className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-white p-5">
               <div className="text-sm font-semibold">Email for checkout</div>
@@ -193,7 +193,7 @@ export default function EvaltreeLanding() {
             </div>
           )}
 
-          {/* CTA Buttons (✅ no login gating) */}
+          {/* CTA Buttons (    no login gating) */}
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={() => {
@@ -349,7 +349,7 @@ export default function EvaltreeLanding() {
         </div>
       )}
 
-      {/* Pricing (✅ no blur/overlay gating) */}
+      {/* Pricing (    no blur/overlay gating) */}
       <section id="pricing" className="mx-auto max-w-6xl px-6 pb-12 scroll-mt-24">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Pricing</h2>

@@ -4,25 +4,25 @@
 //   to: string;
 //   plan: Plan;
 //   sessionId: string;
-//   slug?: string; // ✅ NEW: required for single purchase link
+//   slug?: string; //     NEW: required for single purchase link
 // }) {
 //   const { to, plan, sessionId, slug } = opts;
 
-//   // ✅ Use your real site url (better: move to env NEXT_PUBLIC_SITE_URL)
+//   //     Use your real site url (better: move to env NEXT_PUBLIC_SITE_URL)
 //   const baseUrl =
 //     process.env.NEXT_PUBLIC_SITE_URL ||
 //     process.env.SITE_URL ||
 //     "https://www.evaltree.com";
 
-//   // ✅ Guard: single must include slug (KEEP)
+//   //     Guard: single must include slug (KEEP)
 //   if (plan === "single" && !slug) {
 //     throw new Error("Missing slug for single purchase email link");
 //   }
 
-//   // ✅ TS FIX: make a definite string for the single branch
+//   //     TS FIX: make a definite string for the single branch
 //   const slugForSingle: string = plan === "single" ? (slug as string) : "";
 
-//   // ✅ UPDATED: session_id + slug for single, only session_id for pack
+//   //     UPDATED: session_id + slug for single, only session_id for pack
 //   const downloadUrl =
 //     plan === "single"
 //       ? `${baseUrl}/evaltree/thank-you?session_id=${encodeURIComponent(
