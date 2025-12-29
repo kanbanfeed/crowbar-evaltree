@@ -100,7 +100,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center gap-2 border-t border-[#0F1C3F]/10 pt-6 text-sm opacity-70 md:flex-row md:justify-between">
-          <div>© Crowbar Ltd 2025. All rights reserved.</div>
+          <div>© 2025 Crowbar Ventures Ltd. All rights reserved.</div>
 
           {/*  VAT line (site-wide footer disclosure) */}
           <div className="text-xs opacity-70">
