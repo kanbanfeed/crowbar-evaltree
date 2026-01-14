@@ -6,7 +6,7 @@ export async function GET() {
     .from("briefs")
     .select("id,title,slug,preview_url")
     .eq("is_active", true)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false});
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ briefs: data ?? [] });

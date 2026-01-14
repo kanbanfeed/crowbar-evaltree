@@ -2,11 +2,11 @@ import Image from "next/image";
 import { CROWBAR_REGISTERED_ADDRESS } from "../app/evaltree/_legal";
 
 const navItems = [
-  { label: "Home", href: "/#top" },
-  { label: "About", href: "/#about" },
-  { label: "Previews", href: "/#previews" },
-  { label: "Pricing", href: "/#pricing" },
-  { label: "Download", href: "/evaltree/library" },
+  { label: "Home", href: "..#top" },
+  { label: "About", href: "..#about" },
+  { label: "Previews", href: "..#previews" },
+  { label: "Pricing", href: "..#pricing" },
+  { label: "My Library", href: "/evaltree/library" },
 
 ];
 

@@ -18,10 +18,16 @@ export async function POST(req: Request) {
     }
 
     const plan = body?.plan as Plan | undefined;
-    const briefSlug = typeof body?.briefSlug === "string" ? body.briefSlug : "";
+
+    // ⬇️ CHANGE: support multiple brief slugs
+    const briefSlugs: string[] = Array.isArray(body?.briefSlugs)
+      ? body.briefSlugs.filter((s: any) => typeof s === "string")
+      : [];
+
     const emailRaw = typeof body?.email === "string" ? body.email : "";
     const email = emailRaw.trim().toLowerCase();
 
+    // 2) Basic validations
     if (!plan || (plan !== "single" && plan !== "pack")) {
       return NextResponse.json(
         { error: "Missing/invalid 'plan'. Must be 'single' or 'pack'." },
@@ -36,14 +42,22 @@ export async function POST(req: Request) {
       );
     }
 
-    if (plan === "single" && !briefSlug) {
+    // ⬇️ IMPORTANT: enforce selection rules
+    if (plan === "single" && briefSlugs.length !== 1) {
       return NextResponse.json(
-        { error: "Missing 'briefSlug' for single brief purchase." },
+        { error: "Single plan requires exactly 1 brief." },
         { status: 400 }
       );
     }
 
-    // 2) Validate env
+    if (plan === "pack" && briefSlugs.length !== 5) {
+      return NextResponse.json(
+        { error: "Pack plan requires exactly 5 briefs." },
+        { status: 400 }
+      );
+    }
+
+    // 3) Validate env
     const secret = process.env.STRIPE_SECRET_KEY;
     if (!secret) {
       return NextResponse.json(
@@ -57,7 +71,7 @@ export async function POST(req: Request) {
       process.env.NEXT_PUBLIC_SITE_URL ||
       "http://localhost:3000";
 
-    // 3) Price config
+    // 4) Price config
     const singlePriceId = process.env.STRIPE_PRICE_SINGLE;
     const packPriceId = process.env.STRIPE_PRICE_PACK;
 
@@ -65,7 +79,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           error:
-            "Missing STRIPE_PRICE_SINGLE or STRIPE_PRICE_PACK in env. Create Stripe Prices and set these env vars.",
+            "Missing STRIPE_PRICE_SINGLE or STRIPE_PRICE_PACK in env.",
         },
         { status: 500 }
       );
@@ -73,18 +87,16 @@ export async function POST(req: Request) {
 
     const price = plan === "single" ? singlePriceId : packPriceId;
 
+    // 5) Success URLs (keep your logic)
     const successUrl =
       plan === "single"
-        ? `${origin}/evaltree/thank-you?session_id={CHECKOUT_SESSION_ID}&slug=${encodeURIComponent(
-            briefSlug
-          )}`
-        : `${origin}/evaltree/download-pack?session_id={CHECKOUT_SESSION_ID}`;
+        ? `${origin}/evaltree/thank-you?session_id={CHECKOUT_SESSION_ID}`
+        : `${origin}/evaltree/thank-you?session_id={CHECKOUT_SESSION_ID}`;
 
-    // 4) Create checkout session
+    // 6) Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
 
-      // This makes Stripe checkout show same email as logged-in user
       customer_email: email,
       customer_creation: "always",
 
@@ -94,11 +106,11 @@ export async function POST(req: Request) {
       success_url: successUrl,
       cancel_url: `${origin}/evaltree?canceled=1`,
 
-     
+      // ⬇️ KEY CHANGE: store selected briefs
       metadata: {
         plan,
         source: "evaltree",
-        ...(plan === "single" ? { briefSlug } : {}),
+        briefSlugs: JSON.stringify(briefSlugs),
       },
     });
 

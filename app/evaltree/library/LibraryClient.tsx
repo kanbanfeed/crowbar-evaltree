@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import AccessModal from "@/components/AccessModal";
 
 type Brief = {
   id: string;
   title: string;
   slug: string;
-  preview_url?: string;
 };
 
 export default function LibraryClient() {
@@ -18,6 +18,13 @@ export default function LibraryClient() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string>("");
 
+  /* 🔑 modal state */
+  const [accessOpen, setAccessOpen] = useState(false);
+  const [accessSlug, setAccessSlug] = useState<string | null>(null);
+  const [accessTitle, setAccessTitle] = useState("");
+  const [sessionId, setSessionId] = useState<string>("");
+
+  /* ---------------- Load library ---------------- */
   useEffect(() => {
     if (!isLoggedIn || !user?.email) {
       setItems([]);
@@ -35,7 +42,7 @@ export default function LibraryClient() {
           body: JSON.stringify({ email: user.email }),
         });
 
-        const d = await r.json().catch(() => ({}));
+        const d = await r.json();
 
         if (!r.ok) {
           setErr(d?.error || "Failed to load library");
@@ -44,6 +51,7 @@ export default function LibraryClient() {
         }
 
         setItems(d.briefs || []);
+        setSessionId(d.sessionId); // ✅ REQUIRED for access modal
       } catch {
         setErr("Failed to load library");
         setItems([]);
@@ -53,45 +61,48 @@ export default function LibraryClient() {
     })();
   }, [isLoggedIn, user?.email]);
 
+  /* ---------------- Download (UNCHANGED) ---------------- */
   async function download(slug: string) {
-  if (!user?.email) {
-    setErr("Please log in to download.");
-    return;
-  }
-
-  try {
-    const r = await fetch("/api/library/download", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        slug,
-        email: user.email,
-      }),
-    });
-
-    if (!r.ok) {
-      const d = await r.json().catch(() => ({}));
-      setErr(d?.error || "Download failed");
+    if (!user?.email) {
+      setErr("Please log in to download.");
       return;
     }
 
-    // ✅ This response is a PDF file (binary), so we must download it as blob
-    const blob = await r.blob();
-    const url = window.URL.createObjectURL(blob);
+    try {
+      const r = await fetch("/api/library/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, email: user.email }),
+      });
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${slug}.pdf`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+      if (!r.ok) {
+        const d = await r.json().catch(() => ({}));
+        setErr(d?.error || "Download failed");
+        return;
+      }
 
-    window.URL.revokeObjectURL(url);
-  } catch {
-    setErr("Download failed");
+      const blob = await r.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${slug}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch {
+      setErr("Download failed");
+    }
   }
-}
 
+  /* ---------------- Access (NEW) ---------------- */
+  function openAccess(slug: string, title: string) {
+    setAccessSlug(slug);
+    setAccessTitle(title);
+    setAccessOpen(true);
+  }
 
   return (
     <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
@@ -99,62 +110,62 @@ export default function LibraryClient() {
         <div className="rounded-3xl bg-white p-8 shadow-sm">
           <h1 className="text-2xl font-semibold">Your Library</h1>
           <p className="mt-2 text-sm opacity-80">
-            Purchased briefs appear here and can be downloaded anytime.
+            Purchased briefs appear here and can be accessed anytime.
           </p>
 
           {!loading && !isLoggedIn && (
-            <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
-              <div className="text-sm font-semibold">Login required</div>
-              <p className="mt-1 text-sm opacity-80">
-                Please log in to view your purchased briefs.
-              </p>
+            <div className="mt-6 rounded-2xl bg-[#F5F6F8] p-5">
               <button
                 onClick={signInWithCrowbar}
-                className="mt-4 rounded-xl bg-[#FF6A00] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-95"
+                className="rounded-xl bg-[#FF6A00] px-5 py-2.5 text-sm font-semibold text-white"
               >
                 Continue with Crowbar
               </button>
             </div>
           )}
 
-          {busy && (
-            <div className="mt-6 rounded-2xl bg-[#F5F6F8] p-4 text-sm opacity-80">
-              Loading your purchases…
-            </div>
-          )}
-
-          {!!err && (
-            <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm">
-              {err}
-            </div>
-          )}
-
-          {!busy && isLoggedIn && !err && items.length === 0 && (
-            <div className="mt-6 rounded-2xl bg-[#F5F6F8] p-4 text-sm opacity-80">
-              No purchases found yet.
-            </div>
-          )}
+          {busy && <div className="mt-6">Loading…</div>}
+          {!!err && <div className="mt-6 text-red-600">{err}</div>}
 
           {!busy && items.length > 0 && (
             <ul className="mt-6 space-y-3">
               {items.map((b) => (
                 <li
                   key={b.id}
-                  className="flex items-center justify-between gap-3 rounded-2xl bg-[#F5F6F8] p-4"
+                  className="flex items-center justify-between rounded-2xl bg-[#F5F6F8] p-4"
                 >
-                  <span className="flex-1 min-w-0 font-medium">{b.title}</span>
-                  <button
-                    onClick={() => download(b.slug)}
-                    className="rounded-xl bg-[#0F1C3F] px-4 py-2 text-sm font-semibold text-white hover:opacity-95"
-                  >
-                    Download
-                  </button>
+                  <span className="font-medium">{b.title}</span>
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => openAccess(b.slug, b.title)}
+                      className="rounded-xl border border-[#0F1C3F]/20 bg-white px-4 py-2 text-sm font-semibold hover:bg-[#EEF2FF]"
+                    >
+                      View Brief
+                    </button>
+
+                    <button
+                      onClick={() => download(b.slug)}
+                      className="rounded-xl bg-[#0F1C3F] px-4 py-2 text-sm font-semibold text-white"
+                    >
+                      Download
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </div>
       </div>
+
+      {/* 🔥 ACCESS MODAL */}
+      <AccessModal
+        open={accessOpen}
+        sessionId={sessionId}
+        slug={accessSlug}
+        title={accessTitle}
+        onClose={() => setAccessOpen(false)}
+      />
     </main>
   );
 }

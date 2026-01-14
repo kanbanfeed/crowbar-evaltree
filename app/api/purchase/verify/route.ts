@@ -7,6 +7,23 @@ export const runtime = "nodejs";
 
 type Plan = "single" | "pack";
 
+function parseBriefSlugs(meta: any): string[] {
+  if (!meta) return [];
+  if (typeof meta.briefSlugs === "string") {
+    try {
+      const parsed = JSON.parse(meta.briefSlugs);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  // backward compatibility
+  if (typeof meta.briefSlug === "string") {
+    return [meta.briefSlug];
+  }
+  return [];
+}
+
 export async function POST(req: Request) {
   const { sessionId } = (await req.json()) as { sessionId: string };
   if (!sessionId) {
@@ -25,77 +42,48 @@ export async function POST(req: Request) {
   if (pErr) return NextResponse.json({ error: pErr.message }, { status: 500 });
 
   if (purchase && purchase.status === "paid") {
-    if (purchase.plan === "single" && purchase.customer_email) {
-      try {
-        const session = await stripe.checkout.sessions.retrieve(sessionId);
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      const briefSlugs = parseBriefSlugs(session.metadata);
 
-        const briefSlug =
-          typeof session.metadata?.briefSlug === "string"
-            ? session.metadata.briefSlug
-            : null;
+      // 🔹 Insert purchased briefs (single or pack)
+      if (briefSlugs.length > 0) {
+        const { data: briefs } = await supabaseAdmin
+          .from("briefs")
+          .select("id,slug")
+          .in("slug", briefSlugs)
+          .eq("is_active", true);
 
-        if (briefSlug) {
-          const { data: brief, error: bErr } = await supabaseAdmin
-            .from("briefs")
-            .select("id")
-            .eq("slug", briefSlug)
-            .eq("is_active", true)
-            .maybeSingle();
+        if (briefs?.length) {
+          const rows = briefs.map((b) => ({
+            purchase_id: purchase.id,
+            brief_id: b.id,
+          }));
 
-          if (!bErr && brief?.id) {
-            await supabaseAdmin.from("purchase_downloads").upsert(
-              {
-                purchase_id: purchase.id,
-                brief_id: brief.id,
-              },
-              { onConflict: "purchase_id,brief_id" }
-            );
-          }
+          await supabaseAdmin
+            .from("purchase_downloads")
+            .upsert(rows, { onConflict: "purchase_id,brief_id" });
         }
-      } catch (e: any) {
-        // Do not block user
-        console.error(
-          "purchase_downloads upsert failed (db-paid path):",
-          e?.message || e
-        );
       }
+    } catch (e: any) {
+      console.error(
+        "purchase_downloads upsert failed (db-paid path):",
+        e?.message || e
+      );
     }
 
-   
-    let briefSlug =
-      ((purchase as any)?.brief_slug as string | null) || undefined;
-
-  
-    if (!briefSlug && purchase.plan === "single") {
-      try {
-        const { data: purchaseWithSlug, error: psErr } = await supabaseAdmin
-          .from("purchases")
-          .select("brief_slug")
-          .eq("id", purchase.id)
-          .maybeSingle();
-
-        if (!psErr) {
-          briefSlug =
-            (purchaseWithSlug as any)?.brief_slug
-              ? String((purchaseWithSlug as any).brief_slug)
-              : undefined;
-        }
-      } catch (e: any) {
-        console.error(
-          "brief_slug fetch failed (db-paid path):",
-          e?.message || e
-        );
-      }
-    }
-
+    // 🔹 Email (unchanged logic)
     if (!purchase.email_sent && purchase.customer_email && purchase.plan) {
       try {
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        const briefSlugs = parseBriefSlugs(session.metadata);
+
         await sendEvaltreeThankYouEmail({
           to: purchase.customer_email,
           plan: purchase.plan as Plan,
           sessionId,
-          ...(purchase.plan === "single" && briefSlug
-            ? { slug: briefSlug }
+          ...(purchase.plan === "single" && briefSlugs[0]
+            ? { slug: briefSlugs[0] }
             : {}),
         });
 
@@ -109,7 +97,6 @@ export async function POST(req: Request) {
           .eq("id", purchase.id);
       } catch (e: any) {
         const msg = e?.message || String(e);
-
         await supabaseAdmin
           .from("purchases")
           .update({ email_error: msg })
@@ -122,7 +109,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, purchase });
   }
 
-  // 2) Fallback: fetch from Stripe directly (handles webhook delays)
+  // 2) Fallback: fetch from Stripe directly
   const session = await stripe.checkout.sessions.retrieve(sessionId);
 
   if (session.payment_status !== "paid") {
@@ -136,13 +123,8 @@ export async function POST(req: Request) {
     session.customer_details?.email || session.customer_email || undefined;
 
   const email = rawEmail ? rawEmail.trim().toLowerCase() : undefined;
-
   const plan = (session.metadata?.plan as Plan | undefined) ?? undefined;
-
-  const briefSlug =
-    typeof session.metadata?.briefSlug === "string"
-      ? session.metadata.briefSlug
-      : "";
+  const briefSlugs = parseBriefSlugs(session.metadata);
 
   if (!email || !plan) {
     return NextResponse.json(
@@ -174,26 +156,26 @@ export async function POST(req: Request) {
 
   if (uErr) return NextResponse.json({ error: uErr.message }, { status: 500 });
 
-  if (plan === "single" && briefSlug) {
+  // 🔹 Insert all purchased briefs
+  if (briefSlugs.length > 0) {
     try {
-      const { data: brief, error: bErr } = await supabaseAdmin
+      const { data: briefs } = await supabaseAdmin
         .from("briefs")
-        .select("id")
-        .eq("slug", briefSlug)
-        .eq("is_active", true)
-        .maybeSingle();
+        .select("id,slug")
+        .in("slug", briefSlugs)
+        .eq("is_active", true);
 
-      if (!bErr && brief?.id) {
-        await supabaseAdmin.from("purchase_downloads").upsert(
-          {
-            purchase_id: upserted.id,
-            brief_id: brief.id,
-          },
-          { onConflict: "purchase_id,brief_id" }
-        );
+      if (briefs?.length) {
+        const rows = briefs.map((b) => ({
+          purchase_id: upserted.id,
+          brief_id: b.id,
+        }));
+
+        await supabaseAdmin
+          .from("purchase_downloads")
+          .upsert(rows, { onConflict: "purchase_id,brief_id" });
       }
     } catch (e: any) {
-      // Do not block user
       console.error(
         "purchase_downloads upsert failed (stripe-paid path):",
         e?.message || e
@@ -201,15 +183,16 @@ export async function POST(req: Request) {
     }
   }
 
-  // 4) Send email once (idempotent)
+  // 4) Send email once
   if (!upserted.email_sent) {
     try {
-
       await sendEvaltreeThankYouEmail({
         to: email,
         plan,
         sessionId,
-        ...(plan === "single" ? { slug: briefSlug || undefined } : {}),
+        ...(plan === "single" && briefSlugs[0]
+          ? { slug: briefSlugs[0] }
+          : {}),
       });
 
       await supabaseAdmin
@@ -222,7 +205,6 @@ export async function POST(req: Request) {
         .eq("id", upserted.id);
     } catch (e: any) {
       const msg = e?.message || String(e);
-
       await supabaseAdmin
         .from("purchases")
         .update({ email_error: msg })

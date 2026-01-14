@@ -5,11 +5,11 @@ import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navItems = [
-  { label: "Home", href: ".#top" },
-  { label: "About", href: ".#about" },
-  { label: "Previews", href: ".#previews" },
-  { label: "Pricing", href: ".#pricing" },
-  // { label: "Download", href: "/evaltree/library" },
+  { label: "Home", href: "..#top" },
+  { label: "About", href: "..#about" },
+  { label: "Previews", href: "..#previews" },
+  { label: "Pricing", href: "..#pricing" },
+  { label: "My Library", href: "/evaltree/library" },
 
 ];
 
