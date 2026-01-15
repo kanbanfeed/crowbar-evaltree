@@ -127,7 +127,7 @@ export default function SelectBriefsClient() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-[#F6F8FC] to-[#EEF2FF] px-6 py-12">
+    <main className="min-h-screen bg-gradient-to-br from-[#F6F8FC] to-[#EEF2FF] px-6 py-12 pb-32">
       <div className="mx-auto max-w-7xl">
 
         {/* Header */}
@@ -243,7 +243,7 @@ export default function SelectBriefsClient() {
 
       {/* Sticky pack checkout */}
       {plan === "pack" && (
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-white/90 backdrop-blur shadow-lg">
+        <div className="fixed bottom-0 left-0 right-0 z-40 border-t bg-white/90 backdrop-blur shadow-lg">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
             <div className="text-sm text-gray-700">
               Selected <strong>{selected.length}</strong> / 5 briefs

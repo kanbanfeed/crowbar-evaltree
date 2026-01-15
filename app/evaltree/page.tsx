@@ -210,7 +210,10 @@ export default function EvaltreeLanding() {
             </button>
 
             <button
-              onClick={() => packEnabled && startCheckout("pack")}
+              onClick={() => {
+                if (!packEnabled) return;
+                window.location.href = "/evaltree/select-briefs?plan=pack";
+              }}
               disabled={!packEnabled}
               className={[
                 "inline-flex items-center justify-center rounded-xl border px-6 py-3 font-semibold transition-transform transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]",
