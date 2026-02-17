@@ -3,9 +3,15 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const secret = process.env.STRIPE_SECRET_KEY!;
 
-type Plan = "single" | "pack";
+if (!secret) {
+  throw new Error("STRIPE_SECRET_KEY missing");
+}
+
+const stripe = new Stripe(secret)
+
+type Plan = "7" | "49" | "99";
 
 export async function POST(req: Request) {
   try {
@@ -19,6 +25,13 @@ export async function POST(req: Request) {
 
     const plan = body?.plan as Plan | undefined;
 
+      if (!plan) {
+       return NextResponse.json(
+       { error: "Missing plan" },
+       { status: 400 } 
+     );
+    }
+
     // ⬇️ CHANGE: support multiple brief slugs
     const briefSlugs: string[] = Array.isArray(body?.briefSlugs)
       ? body.briefSlugs.filter((s: any) => typeof s === "string")
@@ -27,10 +40,12 @@ export async function POST(req: Request) {
     const emailRaw = typeof body?.email === "string" ? body.email : "";
     const email = emailRaw.trim().toLowerCase();
 
+   console.log("PLAN RECEIVED:", plan)
+
     // 2) Basic validations
-    if (!plan || (plan !== "single" && plan !== "pack")) {
+    if (!plan || (plan !== "7" && plan !== "49" && plan !== "99")) {
       return NextResponse.json(
-        { error: "Missing/invalid 'plan'. Must be 'single' or 'pack'." },
+        { error: "Invalid plan. Must be 7 / 49 / 99" },
         { status: 400 }
       );
     }
@@ -38,21 +53,6 @@ export async function POST(req: Request) {
     if (!email) {
       return NextResponse.json(
         { error: "Missing 'email'. Please log in again." },
-        { status: 400 }
-      );
-    }
-
-    // ⬇️ IMPORTANT: enforce selection rules
-    if (plan === "single" && briefSlugs.length !== 1) {
-      return NextResponse.json(
-        { error: "Single plan requires exactly 1 brief." },
-        { status: 400 }
-      );
-    }
-
-    if (plan === "pack" && briefSlugs.length !== 5) {
-      return NextResponse.json(
-        { error: "Pack plan requires exactly 5 briefs." },
         { status: 400 }
       );
     }
@@ -72,26 +72,42 @@ export async function POST(req: Request) {
       "http://localhost:3000";
 
     // 4) Price config
-    const singlePriceId = process.env.STRIPE_PRICE_SINGLE;
-    const packPriceId = process.env.STRIPE_PRICE_PACK;
+    const price7 = process.env.STRIPE_PRICE_7!;
+    const price49 = process.env.STRIPE_PRICE_49!;
+    const price99 = process.env.STRIPE_PRICE_99!;
 
-    if (!singlePriceId || !packPriceId) {
+    if (!price7 || !price49 || !price99) {
       return NextResponse.json(
         {
           error:
-            "Missing STRIPE_PRICE_SINGLE or STRIPE_PRICE_PACK in env.",
+            "Missing STRIPE price IDs in env.",
         },
         { status: 500 }
       );
     }
 
-    const price = plan === "single" ? singlePriceId : packPriceId;
+    let price = price7;
+
+    if (plan === "49") price = price49;
+    if (plan === "99") price = price99;
 
     // 5) Success URLs (keep your logic)
-    const successUrl =
-      plan === "single"
-        ? `${origin}/evaltree/thank-you?session_id={CHECKOUT_SESSION_ID}`
-        : `${origin}/evaltree/thank-you?session_id={CHECKOUT_SESSION_ID}`;
+
+      let successUrl = `${origin}/thank-you`;
+
+       if (plan === "7") {
+         successUrl = `${origin}/upsell-49`;
+      }
+
+       if (plan === "49") {
+         successUrl = `${origin}/upsell-99`;
+      }
+
+       if (plan === "99") {
+         successUrl = `${origin}/thank-you`;
+      }
+
+
 
     // 6) Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({

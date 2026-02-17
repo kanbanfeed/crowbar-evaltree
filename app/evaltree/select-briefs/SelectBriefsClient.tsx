@@ -203,7 +203,7 @@ export default function SelectBriefsClient() {
                       onClick={() => checkout([b.slug])}
                       className="rounded-full bg-[#0F1C3F] px-5 py-2 text-sm font-semibold text-white transition hover:bg-black"
                     >
-                      Buy $2.99
+                      Buy $7
                     </button>
                   ) : (
                     <button

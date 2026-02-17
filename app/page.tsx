@@ -1,440 +1,80 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { useAuth } from "@/contexts/AuthContext";
-import PreviewModal from "@/components/PreviewModal";
-
-type Brief = {
-  id: string;
-  title: string;
-  slug: string;
-  preview_url: string;
-};
-
-export default function EvaltreeLanding() {
-  const { user, loading, signInWithCrowbar } = useAuth();
-  const isLoggedIn = !!user?.email;
-
-  const [briefs, setBriefs] = useState<Brief[]>([]);
-  const [count, setCount] = useState<number>(0);
-  const packEnabled = count >= 5;
-
-  //  Guest checkout support (so login is NOT required)
-  const [guestEmail, setGuestEmail] = useState<string>("");
-
-  const emailToUse = useMemo(() => {
-    return (user?.email || guestEmail || "").trim();
-  }, [user?.email, guestEmail]);
-
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  // Purchased slugs (works for logged-in OR guest email)
-  const [purchasedSlugs, setPurchasedSlugs] = useState<string[]>([]);
-  const [purchasedLoading, setPurchasedLoading] = useState(false);
-
-  // Preview modal state
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewSlug, setPreviewSlug] = useState<string | null>(null);
-  const [previewTitle, setPreviewTitle] = useState<string>("");
-
-  // Load briefs + count
-  useEffect(() => {
-    (async () => {
-      try {
-        const r1 = await fetch("/api/briefs", { cache: "no-store" });
-        const d1 = await r1.json();
-        setBriefs((d1.briefs || []).slice(0, 3));
-
-        const r2 = await fetch("/api/briefs/count", { cache: "no-store" });
-        const d2 = await r2.json();
-        setCount(d2.count || 0);
-      } catch {
-        setBriefs([]);
-        setCount(0);
-      }
-    })();
-  }, []);
-
-  //  Fetch purchased slugs using whichever email we have (login OR guest)
-  useEffect(() => {
-    if (!emailToUse || !isValidEmail(emailToUse)) {
-      setPurchasedSlugs([]);
-      return;
-    }
-
-    (async () => {
-      setPurchasedLoading(true);
-      try {
-        const r = await fetch("/api/purchase/purchased-briefs-user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: emailToUse }),
-        });
-
-        const d = await r.json().catch(() => ({}));
-        setPurchasedSlugs(d.slugs || []);
-      } catch {
-        setPurchasedSlugs([]);
-      } finally {
-        setPurchasedLoading(false);
-      }
-    })();
-  }, [emailToUse]);
-
-  function requireEmailOrStop() {
-    if (!emailToUse || !isValidEmail(emailToUse)) {
-      alert("Please enter a valid email to checkout.");
-      document.getElementById("checkout-email")?.scrollIntoView({ behavior: "smooth" });
-      return false;
-    }
-    return true;
-  }
-
-  //  Pricing checkout (single/pack) — NO LOGIN REQUIRED
-  async function startCheckout(plan: "single" | "pack") {
-    if (!requireEmailOrStop()) return;
-
-    const r = await fetch("/api/stripe/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        plan,
-        email: emailToUse,
-      }),
-    });
-
-    const d = await r.json().catch(() => ({}));
-    if (d.url) window.location.href = d.url;
-    else alert(d.error || "Checkout failed");
-  }
-
-  //  Per-brief checkout — NO LOGIN REQUIRED
-  async function checkoutSelected(slug: string) {
-  if (!requireEmailOrStop()) return;
-
-  // already purchased → stop
-  if (purchasedSlugs.includes(slug)) return;
-
-  const r = await fetch("/api/stripe/checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      plan: "single",
-      briefSlugs: [slug], // ✅ FIX: array + correct key
-      email: emailToUse,
-    }),
-  });
-
-  const d = await r.json().catch(() => ({}));
-  if (d.url) {
-    window.location.href = d.url; // ✅ Stripe redirect works
-  } else {
-    alert(d.error || "Checkout failed");
-  }
-}
-
-
-  function openPreview(slug: string, title: string) {
-    setPreviewSlug(slug);
-    setPreviewTitle(title);
-    setPreviewOpen(true);
-  }
-
-  function closePreview() {
-    setPreviewOpen(false);
-    setPreviewSlug(null);
-    setPreviewTitle("");
-  }
-
+export default function Home() {
   return (
-    <main className="min-h-screen bg-[#F5F6F8] text-[#0F1C3F]">
-      {/* Hero */}
-      <section id="top" className="mx-auto max-w-6xl px-6 pb-10 pt-8">
-        <div className="rounded-3xl bg-white p-8 shadow-sm md:p-12">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#F5F6F8] px-4 py-2 text-sm">
-            <span className="h-2 w-2 rounded-full bg-[#FF6A00]" />
-            <span className="opacity-80">Concise research briefs • 3–5 pages</span>
-          </div>
+    <main className="min-h-screen bg-[#0b1220] text-white">
 
-          <h1 className="mt-6 text-3xl font-semibold tracking-tight md:text-5xl">
-            Evaltree Insights by Crowbar
-          </h1>
+      {/* HERO SECTION */}
+      <section className="px-10 py-24 max-w-6xl mx-auto">
 
-          <p className="mt-3 text-lg opacity-80 md:text-xl">
-            Understand anything in 5 minutes.
-          </p>
+        <h1 className="text-5xl md:text-6xl font-bold leading-tight mb-6">
+          What smart operators read when they can’t afford to be wrong.
+        </h1>
 
-          {/*  Optional login (NOT required) */}
-          {!loading && !isLoggedIn && (
-            <div className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
-              <div className="text-sm font-semibold">Optional: Sign in</div>
-              <p className="mt-1 text-sm opacity-80">
-                You can browse everything without login. Sign in only if you want quicker access to your account details.
-              </p>
-              <button
-                onClick={signInWithCrowbar}
-                className="mt-4 inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-95"
-              >
-                Continue with Crowbar
-              </button>
-            </div>
-          )}
+        <p className="text-lg md:text-xl opacity-80 max-w-3xl mb-10">
+          10-minute decision briefs that remove false certainty before capital,
+          hiring, valuation, or geopolitical exposure.
+        </p>
 
-          {/*  Guest email for checkout */}
-          {!isLoggedIn && (
-            <div id="checkout-email" className="mt-6 rounded-2xl border border-[#0F1C3F]/10 bg-white p-5">
-              <div className="text-sm font-semibold">Email for checkout</div>
-              <p className="mt-1 text-sm opacity-80">
-                Enter your email to receive the Stripe purchase link and downloads.
-              </p>
-              <input
-                value={guestEmail}
-                onChange={(e) => setGuestEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="mt-3 w-full rounded-xl border border-[#0F1C3F]/15 bg-white px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-[#FF6A00]"
-              />
-            </div>
-          )}
+        <div className="flex gap-6 items-center">
+          <a
+            href="/topics"
+            className="bg-blue-600 hover:bg-blue-700 px-8 py-4 rounded-xl text-lg font-semibold"
+          >
+            Read a $7 Decision Brief
+          </a>
 
-          {/* CTA Buttons ( no login gating) */}
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <button
-               onClick={() => {
-                window.location.href = "/evaltree/select-briefs?plan=single";
-              }}
-              className="inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white shadow-sm transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
-            >
-              Buy Single Brief – $2.99 USD
-            </button>
+          <a
+            href="/topics"
+            className="text-white opacity-70 hover:opacity-100"
+          >
+            Browse Topics →
+          </a>
+        </div>
 
-            <button
-              onClick={() => {
-                if (!packEnabled) return;
-                window.location.href = "/evaltree/select-briefs?plan=pack";
-              }}
-              disabled={!packEnabled}
-              className={[
-                "inline-flex items-center justify-center rounded-xl border px-6 py-3 font-semibold transition-transform transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]",
-                packEnabled
-                  ? "border-[#FF6A00] bg-white text-[#0F1C3F] hover:bg-[#FF6A00] hover:text-white hover:shadow-md active:bg-[#e65f00] active:text-white active:scale-95 active:translate-y-[1px]"
-                  : "cursor-not-allowed border-[#0F1C3F]/20 bg-[#F5F6F8] text-[#0F1C3F]/50",
-              ].join(" ")}
-            >
-              Buy Five Briefs – $8.99 USD
-            </button>
-          </div>
+      </section>
 
-          <p className="mt-3 text-xs opacity-70">
-            Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
-          </p>
-
-          {!packEnabled && (
-            <p className="mt-4 text-sm opacity-70">
-              The 5-brief bundle will be available once five briefs are published.
-            </p>
-          )}
+      {/* TRUST STRIP */}
+      <section className="border-t border-white/10 border-b border-white/10 py-6">
+        <div className="max-w-6xl mx-auto px-10 text-sm opacity-70">
+          Used by: Founders • Operators • Investors • Professionals • Senior Employees • Policy Advisors
         </div>
       </section>
 
-      {/* About */}
-      <section id="about" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
-        <div className="grid gap-6 rounded-3xl bg-white p-8 shadow-sm md:grid-cols-3 md:p-10">
-          <div className="md:col-span-1">
-            <h2 className="text-xl font-semibold">About</h2>
-            <p className="mt-2 text-sm opacity-70">Fast, clear, decision-ready.</p>
-          </div>
-          <div className="md:col-span-2">
-            <p className="text-base leading-relaxed opacity-85">
-              Evaltree Insights by Crowbar delivers concise, professionally crafted 3–5 page briefs
-              simplifying AI, geopolitics, valuation, and global trends for fast understanding
-              and decision-making.
-            </p>
-          </div>
+      {/* WHY THIS EXISTS */}
+      <section className="px-10 py-20 max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold mb-6">
+          Most bad decisions don’t come from ignorance. <br/>
+          They come from false certainty.
+        </h2>
+
+        <p className="text-lg opacity-80 mb-6 max-w-3xl">
+          You don’t lose money because you didn’t read enough.  
+          You lose money because you trusted the wrong assumption.
+        </p>
+
+        <ul className="space-y-2 text-lg opacity-80">
+          <li>• What most people misjudge</li>
+          <li>• What breaks first</li>
+          <li>• What looks safe but isn’t</li>
+          <li>• Where the narrative hides structural risk</li>
+        </ul>
+
+        <p className="mt-6 text-lg opacity-90">
+          This is not research. This is decision protection.
+        </p>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="px-10 pb-24 max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold mb-6">How it works</h2>
+
+        <div className="space-y-3 text-lg opacity-80">
+          <p>1. Choose a topic</p>
+          <p>2. Read the first 100 words free</p>
+          <p>3. Unlock the 10-minute Decision Brief for $7</p>
+          <p>4. Upgrade if the decision actually matters</p>
         </div>
       </section>
 
-      {/* Preview */}
-      <section id="previews" className="mx-auto max-w-6xl px-6 pb-10 scroll-mt-24">
-        <div className="flex items-end justify-between gap-4">
-          <h2 className="text-xl font-semibold">Choose Your Briefs</h2>
-          <p className="hidden text-sm opacity-70 md:block">Preview and purchase individual research briefs.</p>
-        </div>
-
-        <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {briefs.map((p) => {
-            const alreadyPurchased = !purchasedLoading && purchasedSlugs.includes(p.slug);
-
-            return (
-              <div
-                key={p.id}
-                className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="h-10 w-10 rounded-2xl bg-[#F5F6F8]" />
-                  <span className="rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
-                    Preview
-                  </span>
-                </div>
-
-                <h3 className="mt-4 text-lg font-semibold">{p.title}</h3>
-                <p className="mt-2 text-sm opacity-75">Full PDF opens only after purchase.</p>
-                <button
-                  onClick={() => openPreview(p.slug, p.title)}
-                  className="mt-3 w-full rounded-xl border border-[#0F1C3F]/15 px-4 py-2 text-sm font-semibold hover:bg-[#F5F6F8]"
-                >
-                  Preview
-                </button>
-                {/* Buy per brief */}
-                <button
-                  onClick={() => checkoutSelected(p.slug)}
-                  disabled={purchasedLoading || alreadyPurchased}
-                  className={[
-                    "mt-3 inline-flex w-full items-center justify-center rounded-xl px-4 py-2.5 font-semibold transition",
-                    purchasedLoading
-                      ? "cursor-wait bg-[#0F1C3F]/50 text-white"
-                      : alreadyPurchased
-                      ? "cursor-not-allowed bg-[#0F1C3F]/70 text-white"
-                      : "bg-[#0F1C3F] text-white hover:opacity-95",
-                  ].join(" ")}
-                >
-                  {purchasedLoading
-                    ? "Checking purchase…"
-                    : alreadyPurchased
-                    ? "Already purchased"
-                    : "Buy this brief – $2.99"}
-                </button>
-
-                {alreadyPurchased && (
-                  <p className="mt-2 text-xs opacity-70">
-                    Already purchased for this email. You can re-download from your purchase link / downloads page.
-                  </p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-6 text-center">
-            <button
-              onClick={() =>
-                (window.location.href = "/evaltree/select-briefs?plan=single")
-              }
-              className="inline-flex items-end justify-between gap-2 rounded-xl border border-[#FF6A00] bg-white px-6 py-3 text-sm font-semibold text-[#0F1C3F] transition hover:bg-[#FF6A00] hover:text-white hover:shadow-md"
-            >
-              View more briefs →
-            </button>
-          </div>
-      </section>
-
-      <PreviewModal
-        open={previewOpen}
-        slug={previewSlug}
-        title={previewTitle}
-        onClose={closePreview}
-      />
-
-
-      {/* Pricing ( no blur/overlay gating) */}
-      <section id="pricing" className="mx-auto max-w-6xl px-6 pb-12 scroll-mt-24">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Pricing</h2>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Single Brief — $2.99 USD</div>
-            <div className="mt-2 text-2xl font-semibold">Single Brief</div>
-            <div className="mt-2 text-3xl font-semibold">$2.99 USD</div>
-
-            <button
-               onClick={() => {
-                window.location.href = "/evaltree/select-briefs?plan=single";
-              }}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
-            >
-              Buy Single Briefs – $2.99 USD
-            </button>
-
-            <p className="mt-2 text-xs opacity-70">
-              Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
-            </p>
-
-            <p className="mt-3 text-sm opacity-70">
-              Includes one research brief of your choice. Delivered instantly via Stripe email link.
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Five Briefs — $8.99 USD</div>
-            <div className="mt-2 text-2xl font-semibold">Five Briefs</div>
-            <div className="mt-2 text-3xl font-semibold">$8.99 USD</div>
-
-            <button
-              onClick={() => {
-                if (!packEnabled) return;
-                window.location.href = "/evaltree/select-briefs?plan=pack";
-              }}
-              disabled={!packEnabled}
-              className={[
-                "mt-6 inline-flex items-center w-full justify-center rounded-xl px-6 py-3 font-semibold",
-                packEnabled
-                  ? "bg-white border border-[#FF6A00] text-[#0F1C3F] hover:bg-[#FF6A00] hover:text-white"
-                  : "cursor-not-allowed bg-gray-200 text-gray-400",
-              ].join(" ")}
-            >
-              Buy Five Briefs – $8.99 USD
-            </button>
-
-            <p className="mt-2 text-xs opacity-70">
-              Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
-            </p>
-
-            <p className="mt-3 text-sm opacity-70">
-              Includes Five Briefs. Delivered instantly via Stripe email link.
-            </p>
-
-            {!packEnabled && (
-              <p className="mt-3 text-sm opacity-70">
-                The 5-brief bundle will be enabled when 5 briefs are available.
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div className="mt-6 rounded-3xl border border-[#0F1C3F]/10 bg-white p-6 shadow-sm">
-          <div>
-            <div className="text-sm font-semibold flex items-start justify-between">
-              <h3>Important information</h3>
-              <span className="shrink-0 rounded-full bg-[#F5F6F8] px-3 py-1 text-xs font-medium opacity-80">
-                Not advice
-              </span>
-            </div>
-            <p className="mt-2 text-sm leading-relaxed opacity-80">
-              Evaltree Insights are informational research briefs only and do not constitute legal, financial, or investment advice.
-              Please read the{" "}
-              <Link href="/evaltree/terms" className="font-medium underline underline-offset-4">
-                Terms of Use / Terms of Purchase
-              </Link>{" "}
-              before buying.
-            </p>
-          </div>
-
-          <div className="mt-5 rounded-2xl border border-[#0F1C3F]/10 bg-[#F5F6F8] p-5">
-            <div className="text-sm font-semibold">Payments & delivery</div>
-
-            <p className="mt-2 text-xs opacity-70">
-              Prices shown are exclusive of VAT. VAT is not currently charged but may be applied if legally required.
-            </p>
-
-            <ul className="mt-2 space-y-2 text-sm opacity-80">
-              <li>Payments processed securely by Crowbar Ltd.</li>
-              <li>Transactions are handled by Stripe and delivered instantly upon payment.</li>
-              <li>All purchases are non-refundable due to the digital nature of the product.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

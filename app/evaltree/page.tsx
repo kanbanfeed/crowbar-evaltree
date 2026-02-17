@@ -93,7 +93,7 @@ export default function EvaltreeLanding() {
   }
 
   //  Pricing checkout (single/pack) — NO LOGIN REQUIRED
-  async function startCheckout(plan: "single" | "pack") {
+  async function startCheckout(plan: "7" | "49" | "99") {
     if (!requireEmailOrStop()) return;
 
     const r = await fetch("/api/stripe/checkout", {
@@ -121,7 +121,7 @@ export default function EvaltreeLanding() {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      plan: "single",
+      plan: "7",
       briefSlugs: [slug], // ✅ FIX: array + correct key
       email: emailToUse,
     }),
@@ -206,7 +206,7 @@ export default function EvaltreeLanding() {
               }}
               className="inline-flex items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white shadow-sm transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
             >
-              Buy Single Brief – $2.99 USD
+              Buy Single Brief – $7 USD
             </button>
 
             <button
@@ -222,7 +222,7 @@ export default function EvaltreeLanding() {
                   : "cursor-not-allowed border-[#0F1C3F]/20 bg-[#F5F6F8] text-[#0F1C3F]/50",
               ].join(" ")}
             >
-              Buy Five Briefs – $8.99 USD
+              Buy Five Briefs – $49 USD
             </button>
           </div>
 
@@ -303,7 +303,7 @@ export default function EvaltreeLanding() {
                     ? "Checking purchase…"
                     : alreadyPurchased
                     ? "Already purchased"
-                    : "Buy this brief – $2.99"}
+                    : "Buy this brief – $7"}
                 </button>
 
                 {alreadyPurchased && (
@@ -343,9 +343,9 @@ export default function EvaltreeLanding() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Single Brief — $2.99 USD</div>
+            <div className="text-sm opacity-70">Single Brief — $7 USD</div>
             <div className="mt-2 text-2xl font-semibold">Single Brief</div>
-            <div className="mt-2 text-3xl font-semibold">$2.99 USD</div>
+            <div className="mt-2 text-3xl font-semibold">$7 USD</div>
 
             <button
                onClick={() => {
@@ -353,7 +353,7 @@ export default function EvaltreeLanding() {
               }}
               className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-[#FF6A00] px-6 py-3 font-semibold text-white transition-transform transition-colors duration-150 ease-out hover:bg-[#e65f00] hover:shadow-md active:bg-[#cc5400] active:scale-95 active:translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF6A00] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F5F6F8]"
             >
-              Buy Single Briefs – $2.99 USD
+              Buy Single Briefs – $7 USD
             </button>
 
             <p className="mt-2 text-xs opacity-70">
@@ -366,9 +366,9 @@ export default function EvaltreeLanding() {
           </div>
 
           <div className="rounded-3xl bg-white p-7 shadow-sm">
-            <div className="text-sm opacity-70">Five Briefs — $8.99 USD</div>
+            <div className="text-sm opacity-70">Five Briefs — $49 USD</div>
             <div className="mt-2 text-2xl font-semibold">Five Briefs</div>
-            <div className="mt-2 text-3xl font-semibold">$8.99 USD</div>
+            <div className="mt-2 text-3xl font-semibold">$49 USD</div>
 
             <button
               onClick={() => {
@@ -383,7 +383,7 @@ export default function EvaltreeLanding() {
                   : "cursor-not-allowed bg-gray-200 text-gray-400",
               ].join(" ")}
             >
-              Buy Five Briefs – $8.99 USD
+              Buy Five Briefs – $49 USD
             </button>
 
             <p className="mt-2 text-xs opacity-70">

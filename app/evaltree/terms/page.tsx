@@ -162,7 +162,7 @@ export default function TermsPage() {
               <h2 className="text-base font-semibold">9. Pricing</h2>
               <p className="mt-2">Current pricing is as follows:</p>
               <ul className="mt-2 list-disc pl-5 space-y-1">
-                <li>Single Brief — $2.99</li>
+                <li>Single Brief — $7</li>
                 <li>Five Briefs — $8.99</li>
               </ul>
               <p className="mt-2">

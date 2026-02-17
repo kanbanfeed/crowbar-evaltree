@@ -12,7 +12,7 @@ type Brief = {
 
 type Purchase = {
   id: string;
-  plan: "single" | "pack";
+  plan: "7" | "49" | "99";
   downloads_remaining: number;
   customer_email: string;
   status: "paid" | "refunded" | "canceled";
